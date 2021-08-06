@@ -1,8 +1,8 @@
 const pool=require("../../config/db");
-const DATE_FORMATTER=require('dateformat')
+const DATE_FORMATTER=require('dateformat');
 module.exports={
     createRole:(data,callBack)=>{
-        var cur=new Date().toLocaleDateString('en-US',{timeZone:'Asia/Calcutta'});
+        var cur=new Date().toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
         Role_Created_Date=DATE_FORMATTER(cur,"yyyy-mm-dd hh:MM:ss");
         Role_Updated_Date=DATE_FORMATTER(cur,"yyyy-mm-dd hh:MM:ss");
         Role_Status=1;
@@ -31,6 +31,12 @@ module.exports={
                 if(error){
                     return callBack(error);
                 }
+                results.forEach(element => {
+                    let cd=new Date(element.Role_Created_Date).toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
+                    let ud=new Date(element.Role_Updated_Date).toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
+                    element.Role_Created_Date=DATE_FORMATTER(cd,"yyyy-mm-dd hh:MM:ss");
+                    element.Role_Updated_Date=DATE_FORMATTER(ud,"yyyy-mm-dd hh:MM:ss");
+                });
                 return callBack(null,results);
             }
         );
@@ -48,14 +54,14 @@ module.exports={
         );
     },
     updateRole:(body,callBack)=>{
-        var cur=new Date().toLocaleDateString('en-US',{timeZone:'Asia/Calcutta'});
-        Updated_Date=DATE_FORMATTER(cur,"yyyy-mm-dd");
+        var cur=new Date().toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
+        Role_Updated_Date=DATE_FORMATTER(cur,"yyyy-mm-dd hh:MM:ss");
         pool.query(
             `update Role set Role_Name=?,Role_Status=?,Role_Updated_Date=? where Role_Id=?`,
             [
                 body.Role_Name,
                 body.Role_Status,
-                Updated_Date,
+                Role_Updated_Date,
                 body.Role_Id
             ],
             (error,results,data)=>{

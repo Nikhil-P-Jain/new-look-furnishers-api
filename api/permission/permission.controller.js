@@ -1,7 +1,11 @@
-const{createPermission,getPermissionbyid,getPermission,updatePermission,deletePermission,getRoleName}=require("./permission.service");
+const{createPermission,getPermissionbyid,getPermission,updatePermission,deletePermission,getRoleName,getRoleNamebyid}=require("./permission.service");
 module.exports={
     createPermission: (req,res)=>{
         const body=req.body;
+        let act_na= JSON.stringify(body.activities_id);
+        let start = act_na.replace("[","");
+        body.activities_id= start.replace("]","");
+        console.log("getting act data", body.activities_id);
         createPermission(body,(err,results)=>{
             if(err){
                 return res.status(500).json({
@@ -60,6 +64,9 @@ module.exports={
     },
     updatePermission:(req,res)=>{
         const body=req.body;
+        let act_na= JSON.stringify(body.activities_id);
+                let start = act_na.replace("[","");
+                body.activities_id= start.replace("]","");
         updatePermission(body,(err,results)=>{
             if(err){
                 return res.status(500).json({
@@ -119,6 +126,27 @@ module.exports={
                 success:1,
                 data:{results}
             }) 
+        });
+    },
+    getRoleNamebyid:(req,res)=>{
+        let id=req.params.id;
+        getRoleNamebyid(id,(err,results)=>{
+            if(err){
+                return res.status(500).json({
+                    success:0,
+                    message:err
+                })
+            }
+            if(results.length == 0){
+                return res.status(404).json({
+                    success:0,
+                    message:"Record Doesn't Exist!!"
+                })    
+             }
+            return res.status(200).json({
+                success:1,
+                data:{results}
+            })
         });
     },
 }

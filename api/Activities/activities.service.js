@@ -2,7 +2,7 @@ const pool=require("../../config/db");
 const DATE_FORMATTER=require('dateformat')
 module.exports={
     createActivities:(data,callBack)=>{
-        var cur=new Date().toLocaleDateString('en-US',{timeZone:'Asia/Calcutta'});
+        var cur=new Date().toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
         activities_created_date=DATE_FORMATTER(cur,"yyyy-mm-dd hh:MM:ss");
         activities_updated_date=DATE_FORMATTER(cur,"yyyy-mm-dd hh:MM:ss");
         activities_status=1;
@@ -31,6 +31,12 @@ module.exports={
                 if(error){
                     return callBack(error);
                 }
+                results.forEach(element => {
+                    let cd=new Date(element.activities_created_date).toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
+                    let ud=new Date(element.activities_updated_date).toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
+                    element.activities_created_date=DATE_FORMATTER(cd,"yyyy-mm-dd hh:MM:ss");
+                    element.activities_updated_date=DATE_FORMATTER(ud,"yyyy-mm-dd hh:MM:ss");
+                });
                 return callBack(null,results);
             }
         );
@@ -48,8 +54,8 @@ module.exports={
         );
     },
     updateActivities:(body,callBack)=>{
-        var cur=new Date().toLocaleDateString('en-US',{timeZone:'Asia/Calcutta'});
-        activities_updated_date=DATE_FORMATTER(cur,"yyyy-mm-dd");
+        var cur=new Date().toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
+        activities_updated_date=DATE_FORMATTER(cur,"yyyy-mm-dd hh:MM:ss");
         pool.query(
             `update activities set activities_name=?,activities_status=?,activities_updated_date=? where activities_id=?`,
             [
