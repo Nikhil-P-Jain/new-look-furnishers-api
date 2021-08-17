@@ -1,4 +1,4 @@
-const{createUser,getUsersbyid,getUsers,updateUsers,deleteUsers,login}=require("./users.controller");
+const{createUser,getUsersbyid,getUsers,updateUsers,deleteUsers,login}=require("./registration.controller");
 const router=require("express").Router();
 const{checkToken}=require("../../auth/token_validation");
 router.post("/createusers",checkToken,createUser);

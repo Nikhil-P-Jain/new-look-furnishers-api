@@ -1,4 +1,4 @@
-const{create,getUsersbyid,getUsers,updateUsers,deleteUsers,getUsersbyEmail}=require("./users.service");
+const{create,getUsersbyid,getUsers,updateUsers,deleteUsers,getUsersbyEmail}=require("./registration.service");
 const{genSaltSync,hashSync, compareSync}=require("bcrypt");
 const{sign}=require("jsonwebtoken");
 module.exports={
