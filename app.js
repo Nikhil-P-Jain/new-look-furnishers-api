@@ -21,9 +21,13 @@ const siteRouter=require("./api/site/site.router");
 const productRouter=require("./api/product/product.router");
 const productspecificationRouter=require("./api/product_specification/product_specification.router");
 const projectleadRouter=require("./api/project_lead/project_lead.router");
+const projectlostRouter=require("./api/project_lost/project_lost.router");
 const projectleadupdatesRouter=require("./api/project_lead_updates/project_lead_updates.router");
+const projectlostupdatesRouter=require("./api/project_lost_updates/project_lost_updates.router");
 const project_quotationRouter=require("./api/project_quotation/project_quotation.router");
 const projectquotationupdatesRouter=require("./api/project_quotation_updates/project_quotation_updates.router");
+const supplierRouter=require("./api/supplier/supplier.router");
+const ProjectOrderRouter=require("./api/project_order/project_order.router");
 app.use("/api/upload" , fileRouter);
 app.use("/api/registration",registrationRouter);
 app.use("/api/role",roleRouter);
@@ -39,9 +43,13 @@ app.use("/api/user",userRouter);
 app.use("/api/product",productRouter);
 app.use("/api/product_specification",productspecificationRouter);
 app.use("/api/project_lead",projectleadRouter);
+app.use("/api/project_lost",projectlostRouter);
 app.use("/api/project_lead_updates",projectleadupdatesRouter);
+app.use("/api/project_lost_updates",projectlostupdatesRouter);
 app.use("/api/project_quotation",project_quotationRouter);
-app.use("/api/project_quotation_updates",projectquotationupdatesRouter)
+app.use("/api/project_quotation_updates",projectquotationupdatesRouter);
+app.use("/api/supplier",supplierRouter);
+app.use("/api/project_order",ProjectOrderRouter);
 // app.get("/api",(req,res)=>{
 //     res.json({
 //         success:1,

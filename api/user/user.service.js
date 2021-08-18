@@ -51,7 +51,7 @@ module.exports={
     },
     getUserbyid:(id,callBack)=>{
         pool.query(
-            `select first_name,middle_name,last_name,concat(first_name,' ',last_name) as user_name,address1,address2,phone,email,username,password,photo,role_id,site_id,status,created_date,updated_date, from user where user_id=?`,
+            `select first_name,middle_name,last_name,concat(first_name,' ',last_name) as user_name,address1,address2,phone,email,username,password,photo,role_id,site_id,status,created_date,updated_date from user where user_id=?`,
             [id],
             (error,results,fields)=>{
                 if(error){

@@ -1,11 +1,11 @@
-const{createProject_lead,updateProject_lead,getProject_lead,getProject_leadbyid,getprojectnameforquotation,getpldetailsbyid,deleteProject_lead}=require("./project_lead.service");
+const{createProject_lost,updateProject_lost,getProject_lost,getProject_lostbyid,getprojectnameforquotation,getpldetailsbyid,deleteProject_lost}=require("./project_lost.service");
 module.exports={
-    createProject_lead:(req,res)=>{
+    createProject_lost:(req,res)=>{
         const body=req.body;
         let prod_id= JSON.stringify(body.product_id);
         let start =prod_id.replace("[","");
         body.product_id= start.replace("]","");
-        createProject_lead(body,(err,results)=>{
+        createProject_lost(body,(err,results)=>{
             if(err){
                 return res.status(500).json({
                     success:0,
@@ -15,14 +15,14 @@ module.exports={
             if(results.affectedRows!=0){
                 return res.status(200).json({
                     success:1,
-                    data:results.affectedRows+" "+"Project_lead Created Successfully."
+                    data:results.affectedRows+" "+"Project_lost Created Successfully."
                 });
             }
         })
     },
-    getProject_leadbyid:(req,res)=>{
+    getProject_lostbyid:(req,res)=>{
         let id=req.params.id;
-        getProject_leadbyid(id,(err,results)=>{
+        getProject_lostbyid(id,(err,results)=>{
             if(err){
                 return res.status(500).json({
                     success:0,
@@ -62,8 +62,8 @@ module.exports={
             }) 
         });
     },
-    getProject_lead: (req,res)=>{
-        getProject_lead((err,results)=>{
+    getProject_lost: (req,res)=>{
+        getProject_lost((err,results)=>{
             if(err){
                 return res.status(500).json({
                     success:0,
@@ -103,12 +103,12 @@ module.exports={
             }) 
         });
     },
-    updateProject_lead:(req,res)=>{
+    updateProject_lost:(req,res)=>{
         const body=req.body;
         let prod_id= JSON.stringify(body.product_id);
         let start =prod_id.replace("[","");
         body.product_id= start.replace("]","");
-        updateProject_lead(body,(err,results)=>{
+        updateProject_lost(body,(err,results)=>{
             if(err){
                 return res.status(500).json({
                     success:0,
@@ -118,7 +118,7 @@ module.exports={
             if(results.affectedRows != 0){
                 return res.status(200).json({
                     success:1,
-                    message:results.affectedRows+" "+'Project_lead Updated Successfully!'
+                    message:results.affectedRows+" "+'Project_lost Updated Successfully!'
                 })
             }
             return res.status(404).json({
@@ -127,13 +127,13 @@ module.exports={
             })
         });
     },
-    deleteProject_lead:(req,res)=>{
+    deleteProject_lost:(req,res)=>{
         let id=req.params.id;
-        deleteProject_lead(id,(err,results)=>{
+        deleteProject_lost(id,(err,results)=>{
             if(results.affectedRows != 0){
                 return res.status(200).json({
                     success:1,
-                    message:results.affectedRows+" "+'Project_lead Deleted Successfully!'
+                    message:results.affectedRows+" "+'Project_lost Deleted Successfully!'
                 })
             }
 

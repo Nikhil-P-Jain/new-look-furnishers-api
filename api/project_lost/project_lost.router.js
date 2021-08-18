@@ -1,0 +1,10 @@
+const{createProject_lost,getProject_lost,getProject_lostbyid,updateProject_lost,deleteProject_lost,getprojectnameforquotation,getpldetailsbyid}=require("./project_lost.controller");
+const router=require("express").Router();
+router.post("/createproject_lost",createProject_lost);
+router.get("/getproject_lost",getProject_lost);
+router.get("/getprojectnameforquotation",getprojectnameforquotation);
+router.get("/getproject_lostbyid/:id",getProject_lostbyid);
+router.get("/getpldetailsbyid/:id",getpldetailsbyid);
+router.patch("/updateproject_lost",updateProject_lost);
+router.delete("/deleteproject_lost/:id",deleteProject_lost);
+module.exports=router;

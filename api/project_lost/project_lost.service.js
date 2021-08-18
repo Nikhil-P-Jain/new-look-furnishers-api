@@ -1,7 +1,7 @@
 const pool = require('../../config/db');
 const DATE_FORMATTER=require('dateformat');
 module.exports={
-    createProject_lead:(data,callBack)=>{
+    createProject_lost:(data,callBack)=>{
         var cur=new Date().toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
         project_lead_created_date=DATE_FORMATTER(cur,"yyyy-mm-dd hh:MM:ss");
         project_lead_updated_date=DATE_FORMATTER(cur,"yyyy-mm-dd hh:MM:ss");
@@ -30,10 +30,10 @@ module.exports={
                 return callBack(null,results);
             })
     },
-    getProject_lead:callBack=>{
+    getProject_lost:callBack=>{
         var resultRow=[];
         pool.query(
-            `SELECT pl.project_lead_id,pl.project_lead_name,pl.architect_name,pl.department_name,pl.project_value,concat(u.first_name,' ',u.last_name) as user_name,pl.product_id,p.product_name,pl.project_lead_remarks,pl.project_current_status,pl.order_status,pl.project_lead_date,pl.status,pl.project_lead_created_date,pl.project_lead_updated_date FROM project_lead pl join user u on pl.user_id=u.user_id join product p on pl.product_id=p.product_id`,
+            `SELECT pl.project_lead_id,pl.project_lead_name,pl.architect_name,pl.department_name,pl.project_value,concat(u.first_name,' ',u.last_name) as user_name,pl.product_id,p.product_name,pl.project_lead_remarks,pl.project_current_status,pl.order_status,pl.project_lead_date,pl.status,pl.project_lead_created_date,pl.project_lead_updated_date FROM project_lead pl join user u on pl.user_id=u.user_id join product p on pl.product_id=p.product_id where order_status='Project Lost'`,
 
             [],
             (error,results,fields)=>{
@@ -81,7 +81,7 @@ module.exports={
     },
     getprojectnameforquotation:callBack=>{
         pool.query(
-            `select project_lead_id,project_lead_name,project_current_status from project_lead where order_status='Quotation Submitted' OR order_status='Under Discussion'`,
+            `select project_lead_id,project_lead_name,project_current_status from project_lead where order_status='Quotation Submitted'`,
             [],
             (error,results)=>{
                 if(error){
@@ -91,7 +91,7 @@ module.exports={
             }
         )
     },
-    getProject_leadbyid:(id,callBack)=>{
+    getProject_lostbyid:(id,callBack)=>{
         pool.query(
             `SELECT project_lead_id,project_lead_name,architect_name,department_name,project_value,user_id,product_id,project_lead_remarks,project_current_status,project_lead_date,status,order_status,project_lead_created_date,project_lead_updated_date FROM project_lead where project_lead_id=?`,
             //`SELECT pl.project_lead_name,pl.architect_name,pl.department_name,pl.project_value,concat(u.first_name,' ',u.last_name) as user_name,pl,p.product_name,pl.project_lead_remarks,pl.project_current_status,pl.order_status,pl.project_lead_date,pl.status,pl.project_lead_created_date,pl.project_lead_updated_date FROM project_lead pl join user u on pl.user_id=u.user_id join product p on pl.product_id=p.product_id where project_lead_id=?`,
@@ -160,7 +160,7 @@ module.exports={
                 // return callBack(null,results);
             })
     },
-    updateProject_lead:(body,callBack)=>{
+    updateProject_lost:(body,callBack)=>{
         var cur=new Date().toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
         project_lead_updated_date=DATE_FORMATTER(cur,"yyyy-mm-dd hh:MM:ss");
         pool.query(
@@ -190,7 +190,7 @@ module.exports={
         )
         
     },
-    deleteProject_lead:(id,callBack)=>{
+    deleteProject_lost:(id,callBack)=>{
         pool.query(
             `delete from project_lead where project_lead_id=?`,
             [id],
