@@ -13,6 +13,7 @@ module.exports={
                 });
             }
             if(results.affectedRows!=0){
+                
                 return res.status(200).json({
                     success:1,
                     data:results.affectedRows+" "+"Project_quotation Created Successfully."

@@ -48,8 +48,7 @@ module.exports={
                 }
                 results.forEach(element => {
                     const act_na= element.activities_id;
-                    element.activities_id =act_na.split(',');
-                    
+                    element.activities_id =act_na.split(','); 
                 });
                 return callBack(null,results);
             }

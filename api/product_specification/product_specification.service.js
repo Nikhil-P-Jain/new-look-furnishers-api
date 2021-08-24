@@ -85,6 +85,19 @@ module.exports={
                 return callBack(null,results);
             }
         )        
+    },
+
+    getProductSpecificationbyproductid:(id,callBack)=>{
+        pool.query(
+            `select product_specification_id,product_specification_name from product_specification where product_id=?`,
+            [id],
+            (error,results,fields)=>{
+                if(error){
+                    return callBack(error);
+                }
+                return callBack(null,results);
+            }
+        )
     }
 
 }

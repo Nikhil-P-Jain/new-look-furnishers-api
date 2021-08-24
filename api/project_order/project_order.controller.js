@@ -9,10 +9,10 @@ module.exports={
                     message:err
                 });
             }
-            if(results.affectedRows!=0){
+            if(results!=0){
                 return res.status(200).json({
                     success:1,
-                    data:results.affectedRows+" "+"Project_order Created Successfully."
+                    data:results+" "+"Project_order Created Successfully."
                 });
             }
         })
@@ -67,10 +67,10 @@ module.exports={
                     message:err
                 })
             }
-            if(results.affectedRows != 0){
+            if(results!= 0){
                 return res.status(200).json({
                     success:1,
-                    message:results.affectedRows+" "+'Project_order Updated Successfully!'
+                    message:results+" "+'Project_order Updated Successfully!'
                 })
             }
             return res.status(404).json({
