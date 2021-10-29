@@ -1,4 +1,4 @@
-const{createProject_order,updateProject_order,getProject_order,getProject_orderbyid,deleteProject_order,getProject_order_name}=require("./project_order.service");
+const{createProject_order,updateProject_order,getProject_order,getProject_orderbyid,deleteProject_order,getproject_lead_name}=require("./project_order.service");
 module.exports={
     createProject_order:(req,res)=>{
         const body=req.body;
@@ -88,11 +88,30 @@ module.exports={
                     message:results.affectedRows+" "+'Project_order Deleted Successfully!'
                 })
             }
-
             return res.status(404).json({
                 success:1,
                 message:'Something went wrong! Please try again!'
             })
+        });
+    },
+    getproject_lead_name: (req,res)=>{
+        getproject_lead_name((err,results)=>{
+            if(err){
+                return res.status(500).json({
+                    success:0,
+                    message:err
+                })
+            }
+            if(results.length == 0){
+                return res.status(404).json({
+                    success:0,
+                    message:"Record Doesn't Exist!!"
+                })    
+             }
+            return res.status(200).json({
+                success:1,
+                data:{results}
+            }) 
         });
     },
     // getProject_order_name: (req,res)=>{

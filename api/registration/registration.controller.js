@@ -92,6 +92,7 @@ module.exports={
         });
     },
     login:(req,res)=>{
+        console.log("nnn");
         const body=req.body;
         getUsersbyEmail(body.email,(err,results)=>{
             if(err){
@@ -112,6 +113,7 @@ module.exports={
                 return res.json({
                     success:1,
                     message:"Logged In Successfully",
+                    data:{results},
                     token:jsontoken
                 });
             }

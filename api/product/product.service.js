@@ -6,8 +6,9 @@ module.exports={
         product_created_date=DATE_FORMATTER(cur,"yyyy-mm-dd hh:MM:ss");
         product_updated_date=DATE_FORMATTER(cur,"yyyy-mm-dd hh:MM:ss");
         pool.query(
-            'insert into product(product_name,category_id,product_status,product_created_date,product_updated_date) values(?,?,1,?,?)',
+            'insert into product(product_name,product_brand_id,category_id,product_status,product_created_date,product_updated_date) values(?,?,?,1,?,?)',
             [data.product_name,
+            data.product_brand_id,
             data.category_id,
             product_created_date,
             product_updated_date],
@@ -21,7 +22,7 @@ module.exports={
     },
     getProduct:callBack=>{
         pool.query(
-            `select p.product_id,p.product_name,pc.product_category_id,pc.product_category_name,p.product_status,p.product_created_date,p.product_updated_date from product p join product_category pc on p.category_id=pc.product_category_id`,
+            `select p.product_id,p.product_name,pb.product_brand_id,pb.product_brand_name,pc.product_category_id,pc.product_category_name,p.product_status,p.product_created_date,p.product_updated_date from product p join product_category pc on p.category_id=pc.product_category_id join product_brand pb on p.product_brand_id=pb.product_brand_id`,
             [],
             (error,results,fields)=>{
                 if(error){
@@ -38,7 +39,7 @@ module.exports={
     },
     getProductbyid:(id,callBack)=>{
         pool.query(
-            `select product_name,category_id,product_status,product_created_date,product_updated_date from product where product_id=?`,
+            `select product_name,product_brand_id,category_id,product_status,product_created_date,product_updated_date from product where product_id=?`,
             [id],
             (error,results,fields)=>{
                 if(error){
@@ -52,9 +53,10 @@ module.exports={
         var cur=new Date().toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
         product_updated_date=DATE_FORMATTER(cur,"yyyy-mm-dd hh:MM:ss");
         pool.query(
-            `update product set product_name=?,category_id=?,product_status=?,product_updated_date=? where product_id=?`,
+            `update product set product_name=?,product_brand_id=?,category_id=?,product_status=?,product_updated_date=? where product_id=?`,
             [
                 body.product_name,
+                body.product_brand_id,
                 body.category_id,
                 body.product_status,
                 product_updated_date,
@@ -81,6 +83,21 @@ module.exports={
                 return callBack(null,results);
             }
         )        
+    },
+
+    getsubproductbyproductid:(id,callBack)=>
+    {
+      pool.query(
+          `select * from product where product_brand_id=?`,
+          [id],
+          (error,results,fields)=>{
+              if(error)
+              {
+              return callBack(error);
+              }
+              return callBack(null,results);
+          }
+      )
     }
 
 }

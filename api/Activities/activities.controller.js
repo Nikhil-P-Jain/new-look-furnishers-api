@@ -34,7 +34,7 @@ module.exports={
              }
             return res.status(200).json({
                 success:1,
-                data:{result}
+                data:{results}
             })
         });
     },

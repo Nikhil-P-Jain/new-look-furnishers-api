@@ -1,25 +1,25 @@
-const{createUnit,updateUnit,getUnit,getUnitbyid,deleteUnit}=require("./unit.service");
+const{createpurchase_order,updatepurchase_order,getpurchase_order,getpurchase_orderbyid,deletepurchase_order,getpurchase_order_name}=require("./purchase_order.service");
 module.exports={
-    createUnit:(req,res)=>{
+    createpurchase_order:(req,res)=>{
         const body=req.body;
-        createUnit(body,(err,results)=>{
+        createpurchase_order(body,(err,results)=>{
             if(err){
                 return res.status(500).json({
                     success:0,
                     message:err
                 });
             }
-            if(results.affectedRows!=0){
+            if(results!=0){
                 return res.status(200).json({
                     success:1,
-                    data:results.affectedRows+" "+"Unit Created Successfully."
+                    data:results+" "+"purchase_order Created Successfully."
                 });
             }
         })
     },
-    getUnitbyid:(req,res)=>{
+    getpurchase_orderbyid:(req,res)=>{
         let id=req.params.id;
-        getUnitbyid(id,(err,results)=>{
+        getpurchase_orderbyid(id,(err,results)=>{
             if(err){
                 return res.status(500).json({
                     success:0,
@@ -38,8 +38,8 @@ module.exports={
             }) 
         });
     },
-    getUnit: (req,res)=>{
-        getUnit((err,results)=>{
+    getpurchase_order: (req,res)=>{
+        getpurchase_order((err,results)=>{
             if(err){
                 return res.status(500).json({
                     success:0,
@@ -58,19 +58,19 @@ module.exports={
             }) 
         });
     },
-    updateUnit:(req,res)=>{
+    updatepurchase_order:(req,res)=>{
         const body=req.body;
-        updateUnit(body,(err,results)=>{
+        updatepurchase_order(body,(err,results)=>{
             if(err){
                 return res.status(500).json({
                     success:0,
                     message:err
                 })
             }
-            if(results.affectedRows != 0){
+            if(results!= 0){
                 return res.status(200).json({
                     success:1,
-                    message:results.affectedRows+" "+'Unit Updated Successfully!'
+                    message:results+" "+'purchase_order Updated Successfully!'
                 })
             }
             return res.status(404).json({
@@ -79,21 +79,39 @@ module.exports={
             })
         });
     },
-    deleteUnit:(req,res)=>{
+    deletepurchase_order:(req,res)=>{
         let id=req.params.id;
-        deleteUnit(id,(err,results)=>{
+        deletepurchase_order(id,(err,results)=>{
             if(results.affectedRows != 0){
                 return res.status(200).json({
                     success:1,
-                    message:results.affectedRows+" "+'Unit Deleted Successfully!'
+                    message:results.affectedRows+" "+'purchase_order Deleted Successfully!'
                 })
             }
-
             return res.status(404).json({
                 success:1,
                 message:'Something went wrong! Please try again!'
             })
         });
     },
-
+    // getpurchase_order_name: (req,res)=>{
+    //     getpurchase_order_name((err,results)=>{
+    //         if(err){
+    //             return res.status(500).json({
+    //                 success:0,
+    //                 message:err
+    //             })
+    //         }
+    //         if(results.length == 0){
+    //             return res.status(404).json({
+    //                 success:0,
+    //                 message:"Record Doesn't Exist!!"
+    //             })    
+    //          }
+    //         return res.status(200).json({
+    //             success:1,
+    //             data:{results}
+    //         }) 
+    //     });
+    // },
 }

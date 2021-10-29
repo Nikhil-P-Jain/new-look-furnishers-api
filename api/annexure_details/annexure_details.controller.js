@@ -1,8 +1,8 @@
-const{createUnit,updateUnit,getUnit,getUnitbyid,deleteUnit}=require("./unit.service");
+const{createAnnexure_details,getAnnexure_detailsbyid,getAnnexure_details,updateAnnexure_details,deleteAnnexure_details,getAnnexure_detailsby_annexure_id}=require("./annexure_details.service");
 module.exports={
-    createUnit:(req,res)=>{
+    createAnnexure_details: (req,res)=>{
         const body=req.body;
-        createUnit(body,(err,results)=>{
+        createAnnexure_details(body,(err,results)=>{
             if(err){
                 return res.status(500).json({
                     success:0,
@@ -12,14 +12,14 @@ module.exports={
             if(results.affectedRows!=0){
                 return res.status(200).json({
                     success:1,
-                    data:results.affectedRows+" "+"Unit Created Successfully."
+                    data:results.affectedRows+" "+"Annexure_details Created Successfully."
                 });
             }
-        })
+        });
     },
-    getUnitbyid:(req,res)=>{
+    getAnnexure_detailsbyid:(req,res)=>{
         let id=req.params.id;
-        getUnitbyid(id,(err,results)=>{
+        getAnnexure_detailsbyid(id,(err,results)=>{
             if(err){
                 return res.status(500).json({
                     success:0,
@@ -35,11 +35,11 @@ module.exports={
             return res.status(200).json({
                 success:1,
                 data:{results}
-            }) 
+            })
         });
     },
-    getUnit: (req,res)=>{
-        getUnit((err,results)=>{
+    getAnnexure_details: (req,res)=>{
+        getAnnexure_details((err,results)=>{
             if(err){
                 return res.status(500).json({
                     success:0,
@@ -55,12 +55,12 @@ module.exports={
             return res.status(200).json({
                 success:1,
                 data:{results}
-            }) 
+            })
         });
     },
-    updateUnit:(req,res)=>{
+    updateAnnexure_details:(req,res)=>{
         const body=req.body;
-        updateUnit(body,(err,results)=>{
+        updateAnnexure_details(body,(err,results)=>{
             if(err){
                 return res.status(500).json({
                     success:0,
@@ -70,7 +70,7 @@ module.exports={
             if(results.affectedRows != 0){
                 return res.status(200).json({
                     success:1,
-                    message:results.affectedRows+" "+'Unit Updated Successfully!'
+                    message:results.affectedRows+" "+'Annexure_details Updated Successfully!'
                 })
             }
             return res.status(404).json({
@@ -79,21 +79,46 @@ module.exports={
             })
         });
     },
-    deleteUnit:(req,res)=>{
+    deleteAnnexure_details:(req,res)=>{
         let id=req.params.id;
-        deleteUnit(id,(err,results)=>{
+        deleteAnnexure_details(id,(err,results)=>{
+            if(results.affectedRows != 0){
+                return res.json({
+                    success:1,
+                    message:"Annexure_details Deleted Successfully."
+                })
+            }
             if(results.affectedRows != 0){
                 return res.status(200).json({
                     success:1,
-                    message:results.affectedRows+" "+'Unit Deleted Successfully!'
+                    message:results.affectedRows+" "+'Annexure_details Deleted Successfully!'
                 })
             }
-
             return res.status(404).json({
                 success:1,
                 message:'Something went wrong! Please try again!'
             })
         });
     },
-
+    getAnnexure_detailsby_annexure_id:(req,res)=>{
+        let id=req.params.id;
+        getAnnexure_detailsby_annexure_id(id,(err,results)=>{
+            if(err){
+                return res.status(500).json({
+                    success:0,
+                    message:err
+                })
+            }
+            if(results.length == 0){
+                return res.status(404).json({
+                    success:0,
+                    message:"Record Doesn't Exist!!"
+                })    
+             }
+            return res.status(200).json({
+                success:1,
+                data:{results}
+            })
+        });
+    },
 }

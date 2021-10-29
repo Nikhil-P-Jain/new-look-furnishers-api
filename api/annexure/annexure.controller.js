@@ -1,8 +1,8 @@
-const{createUnit,updateUnit,getUnit,getUnitbyid,deleteUnit}=require("./unit.service");
+const{createAnnexure,getAnnexurebyid,getAnnexure,updateAnnexure,deleteAnnexure,getAnnexureby_poid}=require("./annexure.service");
 module.exports={
-    createUnit:(req,res)=>{
+    createAnnexure: (req,res)=>{
         const body=req.body;
-        createUnit(body,(err,results)=>{
+        createAnnexure(body,(err,results)=>{
             if(err){
                 return res.status(500).json({
                     success:0,
@@ -12,14 +12,14 @@ module.exports={
             if(results.affectedRows!=0){
                 return res.status(200).json({
                     success:1,
-                    data:results.affectedRows+" "+"Unit Created Successfully."
+                    data:results.affectedRows+" "+"Annexure Created Successfully."
                 });
             }
-        })
+        });
     },
-    getUnitbyid:(req,res)=>{
+    getAnnexurebyid:(req,res)=>{
         let id=req.params.id;
-        getUnitbyid(id,(err,results)=>{
+        getAnnexurebyid(id,(err,results)=>{
             if(err){
                 return res.status(500).json({
                     success:0,
@@ -35,11 +35,11 @@ module.exports={
             return res.status(200).json({
                 success:1,
                 data:{results}
-            }) 
+            })
         });
     },
-    getUnit: (req,res)=>{
-        getUnit((err,results)=>{
+    getAnnexure: (req,res)=>{
+        getAnnexure((err,results)=>{
             if(err){
                 return res.status(500).json({
                     success:0,
@@ -55,12 +55,12 @@ module.exports={
             return res.status(200).json({
                 success:1,
                 data:{results}
-            }) 
+            })
         });
     },
-    updateUnit:(req,res)=>{
+    updateAnnexure:(req,res)=>{
         const body=req.body;
-        updateUnit(body,(err,results)=>{
+        updateAnnexure(body,(err,results)=>{
             if(err){
                 return res.status(500).json({
                     success:0,
@@ -70,7 +70,7 @@ module.exports={
             if(results.affectedRows != 0){
                 return res.status(200).json({
                     success:1,
-                    message:results.affectedRows+" "+'Unit Updated Successfully!'
+                    message:results.affectedRows+" "+'Annexure Updated Successfully!'
                 })
             }
             return res.status(404).json({
@@ -79,21 +79,46 @@ module.exports={
             })
         });
     },
-    deleteUnit:(req,res)=>{
+    deleteAnnexure:(req,res)=>{
         let id=req.params.id;
-        deleteUnit(id,(err,results)=>{
+        deleteAnnexure(id,(err,results)=>{
+            if(results.affectedRows != 0){
+                return res.json({
+                    success:1,
+                    message:"Annexure Deleted Successfully."
+                })
+            }
             if(results.affectedRows != 0){
                 return res.status(200).json({
                     success:1,
-                    message:results.affectedRows+" "+'Unit Deleted Successfully!'
+                    message:results.affectedRows+" "+'Annexure Deleted Successfully!'
                 })
             }
-
             return res.status(404).json({
                 success:1,
                 message:'Something went wrong! Please try again!'
             })
         });
     },
-
+    getAnnexureby_poid:(req,res)=>{
+        let id=req.params.id;
+        getAnnexureby_poid(id,(err,results)=>{
+            if(err){
+                return res.status(500).json({
+                    success:0,
+                    message:err
+                })
+            }
+            if(results.length == 0){
+                return res.status(404).json({
+                    success:0,
+                    message:"Record Doesn't Exist!!"
+                })    
+             }
+            return res.status(200).json({
+                success:1,
+                data:{results}
+            })
+        });
+    },
 }

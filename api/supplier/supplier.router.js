@@ -1,4 +1,4 @@
-const{createSupplier,getSupplier,getSupplierbyid,updateSupplier,deleteSupplier}=require("./Supplier.controller");
+const{createSupplier,getSupplier,getSupplierbyid,updateSupplier,deleteSupplier}=require("./supplier.controller");
 const router=require("express").Router();
 router.post("/createsupplier",createSupplier);
 router.get("/getsupplier",getSupplier);

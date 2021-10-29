@@ -34,7 +34,6 @@ module.exports={
         var resultRow=[];
         pool.query(
             `SELECT pl.project_lead_id,pl.project_lead_name,pl.architect_name,pl.department_name,pl.project_value,concat(u.first_name,' ',u.last_name) as user_name,pl.product_id,p.product_name,pl.project_lead_remarks,pl.project_current_status,pl.order_status,pl.project_lead_date,pl.status,pl.project_lead_created_date,pl.project_lead_updated_date FROM project_lead pl join user u on pl.user_id=u.user_id join product p on pl.product_id=p.product_id`,
-
             [],
             (error,results,fields)=>{
                 if(error){
@@ -66,7 +65,7 @@ module.exports={
                                 if(0 == --element.product_id.length){
                                     element.product_name=namee;
                                     element.product_id=pid;
-                                    console.log(element);
+                                    // console.log(element);
                                     resultRow.push(element)
                                     if(0 == --results.length){
                                         return callBack(null,resultRow);

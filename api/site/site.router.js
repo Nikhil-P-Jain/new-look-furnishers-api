@@ -1,4 +1,4 @@
-const{createSite,getSite,getSitebyid,updateSite,deleteSite}=require("./Site.controller");
+const{createSite,getSite,getSitebyid,updateSite,deleteSite}=require("./site.controller");
 const router=require("express").Router();
 router.post("/createsite",createSite);
 router.get("/getsite",getSite);

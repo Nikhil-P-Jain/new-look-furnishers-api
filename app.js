@@ -6,6 +6,35 @@ const publicDir = require('path').join(__dirname,'./api/upload');
 app.use("/api/upload",express.static(publicDir));
 app.use(cors());
 app.use(express.json());
+
+//////////////
+// var http = require('http').Server(app);
+// var io = require('socket.io')(http);
+// const axios = require('axios').default;
+// io.on("connection", socket => {
+//         console.log("New client connected"), setInterval(
+//           () => getApiAndEmit(socket),
+//           100000
+//         );
+//         socket.on("disconnect", () => console.log("Client disconnected"));
+//       });
+//       const getApiAndEmit = async socket => {
+//         try {
+//           const res = await axios.get(
+//             "https://api.coingecko.com/api/v3/coins/markets?vs_currency=btc&order=market_cap_desc&per_page=100&page=1&sparkline=false"
+//           );
+//             // console.log(res.data,"nihangres");
+//           socket.emit("FromAPI", res.data);
+//         } catch (error) {
+//           console.error(`Error: ${error.code}`);
+//         }
+//       };
+//  http.listen(3000, function(){
+//     console.log('listening on *:3000');
+//  });
+//////////////////////
+
+
 const fileRouter = require("./api/fileUpload/fileUpload.service");
 const userRouter=require("./api/user/user.router");
 const registrationRouter=require("./api/registration/registration.router")
@@ -28,6 +57,9 @@ const project_quotationRouter=require("./api/project_quotation/project_quotation
 const projectquotationupdatesRouter=require("./api/project_quotation_updates/project_quotation_updates.router");
 const supplierRouter=require("./api/supplier/supplier.router");
 const ProjectOrderRouter=require("./api/project_order/project_order.router");
+const PurchaseOrderRouter=require("./api/purchase_order/purchase_order.router");
+const annexureRouter=require("./api/annexure/annexure.router");
+const annexure_detailsRouter=require("./api/annexure_details/annexure_details.router");
 app.use("/api/upload" , fileRouter);
 app.use("/api/registration",registrationRouter);
 app.use("/api/role",roleRouter);
@@ -50,12 +82,15 @@ app.use("/api/project_quotation",project_quotationRouter);
 app.use("/api/project_quotation_updates",projectquotationupdatesRouter);
 app.use("/api/supplier",supplierRouter);
 app.use("/api/project_order",ProjectOrderRouter);
-// app.get("/api",(req,res)=>{
-//     res.json({
-//         success:1,
-//         message:"This API is working"
-//     });
-// });
+app.use("/api/purchase_order",PurchaseOrderRouter);
+app.use("/api/annexure",annexureRouter);
+app.use("/api/annexure_details",annexure_detailsRouter);
+app.get("/api",(req,res)=>{
+    res.json({
+        success:1,
+        message:"This API is working"
+    });
+});
 
 
 app.listen(process.env.APP_PORT,()=>{

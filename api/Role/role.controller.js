@@ -1,4 +1,4 @@
-const{createRole,getRolebyid,getRole,updateRole,deleteRole}=require("./Role.service");
+const{createRole,getRolebyid,getRole,updateRole,deleteRole}=require("./role.service");
 module.exports={
     createRole: (req,res)=>{
         const body=req.body;

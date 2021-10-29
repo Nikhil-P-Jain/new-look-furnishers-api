@@ -12,7 +12,7 @@ module.exports={
             if(results.affectedRows!=0){
                 return res.status(200).json({
                     success:1,
-                    data:results.affectedRows+" "+"Supplier Created Successfully."
+                    data:results.affectedRows+" "+"Vendor Created Successfully."
                 });
             }
         })
@@ -51,7 +51,7 @@ module.exports={
                     success:0,
                     message:"Record Doesn't Exist!!"
                 })    
-             }
+            }
             return res.status(200).json({
                 success:1,
                 data:{results}
@@ -70,7 +70,7 @@ module.exports={
             if(results.affectedRows != 0){
                 return res.status(200).json({
                     success:1,
-                    message:results.affectedRows+" "+'Supplier Updated Successfully!'
+                    message:results.affectedRows+" "+'Vendor Updated Successfully!'
                 })
             }
             return res.status(404).json({
@@ -85,7 +85,7 @@ module.exports={
             if(results.affectedRows != 0){
                 return res.status(200).json({
                     success:1,
-                    message:results.affectedRows+" "+'Supplier Deleted Successfully!'
+                    message:results.affectedRows+" "+'Vendor Deleted Successfully!'
                 })
             }
 

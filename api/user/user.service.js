@@ -5,9 +5,8 @@ module.exports={
         var cur=new Date().toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
         created_date=DATE_FORMATTER(cur,"yyyy-mm-dd hh:MM:ss");
         updated_date=DATE_FORMATTER(cur,"yyyy-mm-dd hh:MM:ss");
-        status=1;
         pool.query(
-            'insert into user(first_name,middle_name,last_name,address1,address2,phone,email,username,password,photo,role_id,site_id,status,created_date,updated_date) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)',
+            'insert into user(first_name,middle_name,last_name,address1,address2,phone,email,username,password,photo,role_id,site_id,status,created_date,updated_date) values(?,?,?,?,?,?,?,?,?,?,?,?,1,?,?)',
             [
                 data.first_name,
                 data.middle_name,
@@ -21,11 +20,11 @@ module.exports={
                 data.photo,
                 data.role_id,
                 data.site_id,
-                status,
                 created_date,
                 updated_date],
 
             (error,results,data)=>{
+                // console.log(error,"err-createuser");
                 if(error){
                     return callBack(error);
                 }
@@ -65,7 +64,7 @@ module.exports={
         var cur=new Date().toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
         updated_date=DATE_FORMATTER(cur,"yyyy-mm-dd hh:MM:ss");
         pool.query(
-            'update user set first_name=?,middle_name=?,last_name=?,address1=?,address2=?,phone=?,email=?,username=?,password=?,photo=?,role_id=?,site_id=?,status=?,updated_date=? where user_id=?',
+            'update user set first_name=?,middle_name=?,last_name=?,address1=?,address2=?,phone=?,email=?,username=?,photo=?,role_id=?,site_id=?,status=?,updated_date=? where user_id=?',
 
             [
                 body.first_name,
@@ -76,7 +75,6 @@ module.exports={
                 body.phone,
                 body.email,
                 body.username,
-                body.password,
                 body.photo,
                 body.role_id,
                 body.site_id,
@@ -117,4 +115,27 @@ module.exports={
             }
         )
     },
+    getUsersbyEmail:(email,callBack)=>{
+        pool.query(
+            `select user_id,first_name,middle_name,last_name,concat(first_name,' ',last_name) as user_name,address1,address2,phone,username,password,photo,role_id,site_id,status,created_date,updated_date from user where email=?`,
+        [email],
+        (error,results,fields)=>{
+            if(error){
+                return callBack(error);
+            }
+            return callBack(null,results[0])
+        });
+    },
+
+    chnagepassword:(body,callBack)=>{
+        pool.query(`update user set password=? where email=?`,
+        [body.password,
+        body.email],
+        (error,results)=>{
+            if(error){
+                return callBack(error);
+            }
+            return callBack(null,results)
+        })
+    }
 }

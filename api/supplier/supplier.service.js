@@ -7,7 +7,7 @@ module.exports={
         supplier_updated_date=DATE_FORMATTER(cur,"yyyy-mm-dd hh:MM:ss");
         supplier_status=1;
         pool.query(
-            'insert into supplier(supplier_name,supplier_company,supplier_address,city_id,supplier_contact_no,supplier_email_id,supplier_status,supplier_created_date,supplier_updated_date) values(?,?,?,?,?,?,?,?,?)',
+            'insert into supplier(supplier_name,supplier_company,supplier_address,city_id,supplier_contact_no,supplier_email_id,supplier_gst,supplier_status,supplier_created_date,supplier_updated_date) values(?,?,?,?,?,?,?,?,?,?)',
             [
                 data.supplier_name,
                 data.supplier_company,
@@ -15,6 +15,7 @@ module.exports={
                 data.city_id,
                 data.supplier_contact_no,
                 data.supplier_email_id,
+                data.supplier_gst,
                 supplier_status,
                 supplier_created_date,
                 supplier_updated_date],
@@ -28,7 +29,7 @@ module.exports={
     },
     getSupplier:callBack=>{
         pool.query(
-            `select s.supplier_id,s.supplier_name,s.supplier_company,s.supplier_address,s.city_id,c.city_name,s.supplier_contact_no,s.supplier_email_id,s.supplier_status,s.supplier_created_date,s.supplier_updated_date from supplier s join city c on s.city_id=c.city_id`,
+            `select s.supplier_id,s.supplier_name,s.supplier_company,s.supplier_address,s.city_id,c.city_name,s.supplier_contact_no,s.supplier_email_id,s.supplier_gst,s.supplier_status,s.supplier_created_date,s.supplier_updated_date from supplier s join city c on s.city_id=c.city_id`,
             [],
             (error,results,fields)=>{
                 if(error){
@@ -59,7 +60,7 @@ module.exports={
         var cur=new Date().toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
         supplier_updated_date=DATE_FORMATTER(cur,"yyyy-mm-dd hh:MM:ss");
         pool.query(
-            'update supplier set supplier_name=?,supplier_company=?,supplier_address=?,city_id=?,supplier_contact_no=?,supplier_email_id=?,supplier_status=?,supplier_updated_date=? where supplier_id=?',
+            'update supplier set supplier_name=?,supplier_company=?,supplier_address=?,city_id=?,supplier_contact_no=?,supplier_email_id=?,supplier_gst=?,supplier_status=?,supplier_updated_date=? where supplier_id=?',
 
             [
                 body.supplier_name,
@@ -68,6 +69,7 @@ module.exports={
                 body.city_id,
                 body.supplier_contact_no,
                 body.supplier_email_id,
+                body.supplier_gst,
                 body.supplier_status,
                 supplier_updated_date,
                 body.supplier_id

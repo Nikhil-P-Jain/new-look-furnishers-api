@@ -53,7 +53,7 @@ module.exports={
     getProject_order:callBack=>{
         var resultRow=[];
         pool.query(
-            `select p.project_order_id,p.project_quotation_id,pq.quotation_number,p.project_order_date,p.project_order_description,p.site_id,s.site_name,p.project_order_status,p.project_order_created_date,p.project_order_updated_date from project_order p join site s on p.site_id=s.site_id join project_quotation pq on p.project_quotation_id=pq.project_quotation_id order by p.project_order_id`,
+            `select p.project_order_id,p.project_quotation_id,pq.quotation_number,pl.project_lead_name,p.project_order_date,p.project_order_description,p.site_id,s.site_name,p.project_order_status,p.project_order_created_date,p.project_order_updated_date from project_order p join site s on p.site_id=s.site_id join project_quotation pq on p.project_quotation_id=pq.project_quotation_id join project_lead pl on pq.project_lead_id=pl.project_lead_id order by p.project_order_id`,
             [],
             (error,results,fields)=>{
                 if(error){
@@ -83,6 +83,7 @@ module.exports={
                                 project_order_id:row.project_order_id,
                                 project_quotation_id:row.project_quotation_id,
                                 quotation_number:row.quotation_number,
+                                project_lead_name:row.project_lead_name,
                                 project_order_date:row.project_order_date,
                                 project_order_description:row.project_order_description,
                                 site_id:row.site_id,
@@ -107,7 +108,7 @@ module.exports={
     getProject_orderbyid:(id,callBack)=>{
         var resultRow=[];
         pool.query(
-            `select p.project_order_id,p.project_quotation_id,pq.quotation_number,p.project_order_date,p.project_order_description,p.site_id,s.site_name,p.project_order_status,p.project_order_created_date,p.project_order_updated_date from project_order p join site s on p.site_id=s.site_id join project_quotation pq on p.project_quotation_id=pq.project_quotation_id where p.project_order_id=?`,
+            `select p.project_order_id,p.project_quotation_id,pq.quotation_number,pl.project_lead_name,p.project_order_date,p.project_order_description,p.site_id,s.site_name,p.project_order_status,p.project_order_created_date,p.project_order_updated_date from project_order p join site s on p.site_id=s.site_id join project_quotation pq on p.project_quotation_id=pq.project_quotation_id join project_lead pl on pq.project_lead_id=pl.project_lead_id where p.project_order_id=?`,
             [id],
             (error,results,fields)=>{
                 if(error){
@@ -137,6 +138,7 @@ module.exports={
                                 project_order_id:row.project_order_id,
                                 project_quotation_id:row.project_quotation_id,
                                 quotation_number:row.quotation_number,
+                                project_lead_name:row.project_lead_name,
                                 project_order_date:row.project_order_date,
                                 project_order_description:row.project_order_description,
                                 site_id:row.site_id,
@@ -246,5 +248,16 @@ module.exports={
                 }
             }
         )        
+    },
+    getproject_lead_name:callBack=>{
+        pool.query(
+            `SELECT pl.project_lead_name,pq.project_quotation_id,pq.quotation_number from  project_lead pl ,project_quotation pq where pl.project_lead_id=pq.project_lead_id`,
+            [],
+            (error,results,fields)=>{
+                if(error){
+                    return callBack(error);
+                }
+                return callBack(null,results);
+            })
     },
 }
