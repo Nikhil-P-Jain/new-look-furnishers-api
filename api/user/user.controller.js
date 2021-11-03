@@ -128,7 +128,7 @@ module.exports={
         });
     },
     login:(req,res)=>{
-        console.log("nnn");
+        // console.log("nnn");
         const body=req.body;
         getUsersbyEmail(body.email,(err,results)=>{
             if(err){

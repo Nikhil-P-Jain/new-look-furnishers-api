@@ -66,6 +66,12 @@ module.exports={
                 if(error){
                     return callBack(error);
                 }
+                results.forEach(element => {
+                    let cd=new Date(element.created_date).toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
+                    let ud=new Date(element.updated_date).toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
+                    element.created_date=DATE_FORMATTER(cd,"yyyy-mm-dd hh:MM:ss");
+                    element.updated_date=DATE_FORMATTER(ud,"yyyy-mm-dd hh:MM:ss");
+                });
                 return callBack(null,results);
             }
         );
@@ -84,12 +90,19 @@ module.exports={
     },
     getAnnexureby_poid:(id,callBack)=>{
         pool.query(
-            `select annexure_id,status,created_date,updated_date from annexure a where purchase_order_id=? join purchase_order po on po.purchase_order_id=a.purchase_order_id`,
+            `select a.annexure_id,a.status,a.created_date,a.updated_date from annexure a where purchase_order_id=?`,
+            // `join purchase_order po on po.purchase_order_id=a purchase_order_id`,
             [id],
             (error,results,fields)=>{
                 if(error){
                     return callBack(error);
                 }
+                results.forEach(element => {
+                    let cd=new Date(element.created_date).toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
+                    let ud=new Date(element.updated_date).toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
+                    element.created_date=DATE_FORMATTER(cd,"yyyy-mm-dd hh:MM:ss");
+                    element.updated_date=DATE_FORMATTER(ud,"yyyy-mm-dd hh:MM:ss");
+                });
                 return callBack(null,results);
             }
         );
