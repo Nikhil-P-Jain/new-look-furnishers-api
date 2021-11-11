@@ -111,7 +111,7 @@ module.exports={
     getpurchase_orderbyid:(id,callBack)=>{
         var resultRow=[];
         pool.query(
-            `select p.purchase_order_id,p.project_order_id,p.po_number,po.project_quotation_id,pl.project_lead_name,p.purchase_order_date,p.purchase_order_description,p.site_id,s.site_name,p.supplier_id,sup.supplier_name,p.purchase_order_status,p.purchase_order_created_date,p.purchase_order_updated_date from purchase_order p join site s on p.site_id=s.site_id join supplier sup on p.supplier_id=sup.supplier_id join project_order po on p.project_order_id=po.project_order_id join project_quotation pq on po.project_quotation_id=pq.project_quotation_id join project_lead pl on pq.project_lead_id=pl.project_lead_id where purchase_order_id=?`,
+            `select p.purchase_order_id,p.project_order_id,p.po_number,po.project_quotation_id,pl.project_lead_name,p.purchase_order_date,p.purchase_order_description,p.site_id,s.site_name,s.site_address,p.supplier_id,sup.supplier_name,p.purchase_order_status,p.purchase_order_created_date,p.purchase_order_updated_date from purchase_order p join site s on p.site_id=s.site_id join supplier sup on p.supplier_id=sup.supplier_id join project_order po on p.project_order_id=po.project_order_id join project_quotation pq on po.project_quotation_id=pq.project_quotation_id join project_lead pl on pq.project_lead_id=pl.project_lead_id where purchase_order_id=?`,
             [id],
             (error,results,fields)=>{
                 if(error){
@@ -147,6 +147,7 @@ module.exports={
                                 purchase_order_description:row.purchase_order_description,
                                 site_id:row.site_id,
                                 site_name:row.site_name,
+                                site_address:row.site_address,
                                 supplier_id:row.supplier_id,
                                 supplier_name:row.supplier_name,
                                 purchase_order_status:row.purchase_order_status,
@@ -257,4 +258,72 @@ module.exports={
             }
         )        
     },
+    getpurchase_orderbyproductid:(id,callBack)=>{
+        var fres=[],annexure=[],finalres=[];
+        pool.query(
+            `SELECT * from purchase_order_specified_product posp join product_specification ps on posp.specification_id=ps.product_specification_id where ps.product_id=?`,
+            [id],
+            (error,results,fields)=>{
+                if(error){
+                    return callBack(error);
+                }
+                if(results.length !=0){
+                    fres=results;
+                    pool.query(
+                        `select * from annexure where purchase_order_id=?`,
+                        [
+                          fres[0].purchase_order_id  
+                        ],
+                        (error,resul,fields)=>{
+                            if(error){
+                                return callBack(error)
+                            }
+                            if(resul.length != 0){
+                                var len=resul.length;
+                                resul.forEach(element => {
+                                    pool.query(
+                                        `select * from annexure_details where annexure_id=? and product_id=?`,
+                                        [
+                                         element.annexure_id,
+                                         id  
+                                        ],
+                                        (error,results,fields)=>{
+                                            if(error){
+                                                return callBack(error);
+                                            }
+                                            if(results.length != 0){
+                                                results.forEach(element => {
+                                                    annexure.push({
+                                                        annexure_id:element.annexure_id,
+                                                        product_id:element.product_id,
+                                                        length:element.length,
+                                                        quantity:element.quantity,
+                                                        area:element.area
+                                                    })       
+                                                });
+                                            }
+
+                                            if(0 == --len){
+                                                finalres.push({
+                                                    purchase_order_id:fres[0].purchase_order_id,
+                                                    specification_id:fres[0].specification_id,
+                                                    purchase_order_specified_product_quantity:fres[0].purchase_order_specified_product_quantity,
+                                                    annexure:annexure
+                                                })
+
+                                                return callBack(null,finalres);
+                                            }
+                                        }
+                                    ) 
+                                });
+                            }else{
+                                return callBack(null,fres)
+                            }
+                        }
+                    )
+                }else{
+                    return callBack(null,results);
+                }
+            }
+        )}
 }

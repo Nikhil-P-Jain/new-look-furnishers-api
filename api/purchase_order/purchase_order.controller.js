@@ -1,4 +1,4 @@
-const{createpurchase_order,updatepurchase_order,getpurchase_order,getpurchase_orderbyid,deletepurchase_order,getpurchase_order_name}=require("./purchase_order.service");
+const{createpurchase_order,updatepurchase_order,getpurchase_order,getpurchase_orderbyid,deletepurchase_order,getpurchase_orderbyproductid}=require("./purchase_order.service");
 module.exports={
     createpurchase_order:(req,res)=>{
         const body=req.body;
@@ -114,4 +114,35 @@ module.exports={
     //         }) 
     //     });
     // },
+    getpurchase_orderbyproductid:(req,res)=>{
+        let id=req.params.id;
+        getpurchase_orderbyproductid(id,(err,results)=>{
+            if(err){
+                return res.status(500).json({
+                    success:0,
+                    message:err
+                })
+            }
+            if(results.length != 0){
+                var qty=0,area=0;
+                qty=results[0].purchase_order_specified_product_quantity;
+                var an=results[0].annexure;
+                if(an && an.length != 0){
+                    an.forEach(element => {
+                       area = area + parseFloat(element.area); 
+                    });
+                }
+                return res.status(200).json({
+                    success:1,
+                    qty:qty,
+                    area:area,
+                    data:{results}
+                }) 
+             }
+             return res.status(404).json({
+                success:0,
+                message:"Record Doesn't Exist!!"
+            })   
+        });
+    },
 }
