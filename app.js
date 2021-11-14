@@ -60,6 +60,7 @@ const ProjectOrderRouter=require("./api/project_order/project_order.router");
 const PurchaseOrderRouter=require("./api/purchase_order/purchase_order.router");
 const annexureRouter=require("./api/annexure/annexure.router");
 const annexure_detailsRouter=require("./api/annexure_details/annexure_details.router");
+const accessoriesRouter=require("./api/accessories/accessories.router");
 app.use("/api/upload" , fileRouter);
 app.use("/api/registration",registrationRouter);
 app.use("/api/role",roleRouter);
@@ -85,6 +86,8 @@ app.use("/api/project_order",ProjectOrderRouter);
 app.use("/api/purchase_order",PurchaseOrderRouter);
 app.use("/api/annexure",annexureRouter);
 app.use("/api/annexure_details",annexure_detailsRouter);
+app.use("/api/accessories",accessoriesRouter);
+
 app.get("/api",(req,res)=>{
     res.json({
         success:1,

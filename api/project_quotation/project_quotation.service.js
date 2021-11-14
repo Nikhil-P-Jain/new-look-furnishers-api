@@ -37,7 +37,7 @@ module.exports={
                             return callBack(error);
                             }
                             if(results.affectedRows != 0){
-                                console.log(projid,"projid",data.productinfo);
+                                // console.log(projid,"projid",data.productinfo);
                                 data.productinfo.forEach(element => {
                                     pool.query(
                                         `INSERT INTO project_quotation_specified_product(project_quotation_id, product_specification_id, pq_specified_products_quantity, unit_id) VALUES (?,?,?,?)

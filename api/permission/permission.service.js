@@ -18,7 +18,7 @@ module.exports={
                 permission_updated_date
             ],
             (error,results,data)=>{
-                console.log(error);
+                // console.log(error);
                 if(error){
                     return callBack(error);
                 }
@@ -99,7 +99,7 @@ module.exports={
                 console.log(error);
                 return callBack(error);
             }
-            console.log(results);
+            // console.log(results);
 
             results.forEach(element => {
                 const act_na= element.activities_id;

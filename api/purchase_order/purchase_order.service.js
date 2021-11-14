@@ -111,7 +111,7 @@ module.exports={
     getpurchase_orderbyid:(id,callBack)=>{
         var resultRow=[];
         pool.query(
-            `select p.purchase_order_id,p.project_order_id,p.po_number,po.project_quotation_id,pl.project_lead_name,p.purchase_order_date,p.purchase_order_description,p.site_id,s.site_name,s.site_address,p.supplier_id,sup.supplier_name,p.purchase_order_status,p.purchase_order_created_date,p.purchase_order_updated_date from purchase_order p join site s on p.site_id=s.site_id join supplier sup on p.supplier_id=sup.supplier_id join project_order po on p.project_order_id=po.project_order_id join project_quotation pq on po.project_quotation_id=pq.project_quotation_id join project_lead pl on pq.project_lead_id=pl.project_lead_id where purchase_order_id=?`,
+            `select p.purchase_order_id,p.project_order_id,p.po_number,po.project_quotation_id,pl.project_lead_name,p.purchase_order_date,p.purchase_order_description,p.site_id,s.site_name,concat(u.first_name," ",u.last_name) as contact_name, u.phone,s.site_address,p.supplier_id,sup.supplier_name,p.purchase_order_status,p.purchase_order_created_date,p.purchase_order_updated_date from purchase_order p join site s on p.site_id=s.site_id join user u on s.site_id=u.site_id join supplier sup on p.supplier_id=sup.supplier_id join project_order po on p.project_order_id=po.project_order_id join project_quotation pq on po.project_quotation_id=pq.project_quotation_id join project_lead pl on pq.project_lead_id=pl.project_lead_id where purchase_order_id=?`,
             [id],
             (error,results,fields)=>{
                 if(error){
@@ -145,6 +145,8 @@ module.exports={
                                 project_quotation_id:row.project_quotation_id,
                                 purchase_order_date:row.purchase_order_date,
                                 purchase_order_description:row.purchase_order_description,
+                                contact_name:row.contact_name,
+                                phone:row.phone,
                                 site_id:row.site_id,
                                 site_name:row.site_name,
                                 site_address:row.site_address,

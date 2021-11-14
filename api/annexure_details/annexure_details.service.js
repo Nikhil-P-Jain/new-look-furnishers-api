@@ -158,7 +158,7 @@ module.exports={
                              updated_date
                             ],
                             (error,results,fields)=>{
-                                console.log(error,"error");
+                                // console.log(error,"error");
                                 if(error){
                                     return callBack(error);
                                 }
@@ -244,13 +244,15 @@ module.exports={
     },
     get_annexure_details_json:(id,callBack)=>{
         var resultRow=[];
+        // console.log(id,"id");
         pool.query(
-            `SELECT * from annexure where annexure_id=?`,
+            `SELECT an.annexure_id,an.purchase_order_id,po.po_number,pl.project_lead_name,sup.supplier_name,st.site_name,st.site_address,us.phone,concat(us.first_name," ",us.last_name) as contact_name,an.created_date,an.updated_date,an.status from annexure an join purchase_order po on po.purchase_order_id=an.purchase_order_id join project_order pro on po.project_order_id=pro.project_order_id join project_quotation pq on pro.project_quotation_id=pq.project_quotation_id join project_lead pl on pq.project_lead_id=pq.project_lead_id=pl.project_lead_id join supplier sup on po.supplier_id=sup.supplier_id join site st on po.site_id=st.site_id join user us on st.site_id=us.site_id where annexure_id=?`,
             [id],
             (error,results,fields)=>{
                 if(error){
                     return callBack(error);
                 }
+                // console.log(results,"results");
                 if(results.length != 0){
                     results.forEach(element => {
                         let cd=new Date(element.created_date).toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
@@ -261,17 +263,28 @@ module.exports={
                     var length=results.length;
                     async.each(results,(row,callback)=>{
                         pool.query(
-                            `select ad.annexure_details_id,p.product_name,ad.product_id,ad.length,quantity,ad.total_length,ad.module,ad.area,ad.created_date,ad.updated_date,ad.status from annexure_details ad join product p on ad.product_id=p.product_id where ad.annexure_id=?`,
-                            [   
-                                row.annexure_id    
-                            ],
+                            `select ad.annexure_details_id,p.product_name,ad.product_id,ps.product_specification_name,ad.length,quantity,ad.total_length,ad.module,ad.area,ad.created_date,ad.updated_date,ad.status from annexure_details ad join product p on ad.product_id=p.product_id join product_specification ps on p.product_id=ps.product_id where annexure_id=?`,
+                            [row.annexure_id],
                             (error,respp,fields)=>{
+                                // console.log(respp,"respp");
                                 if(error){
                                     return callBack(error);
                                 }
                                 resultRow.push({
+                                    purchase_order_id:row.purchase_order_id,
+                                    po_number:row.po_number,
+                                    project_lead_name:row.project_lead_name,
+                                    supplier_name:row.supplier_name,
+                                    site_name:row.site_name,
+                                    site_address:row.site_address,
+                                    phone:row.phone,
+                                    contact_name:row.contact_name,
+                                    created_date:row.created_date,
+                                    updated_date:row.updated_date,
+                                    status:row.status,
                                     product_name:row.product_name,
                                     product_id:row.product_id,
+                                    product_specification_name:row.product_specification_name,
                                     length:row.length,
                                     quantity:row.quantity,
                                     total_length:row.total_length,
@@ -281,6 +294,7 @@ module.exports={
                                     updated_date:row.updated_date,
                                     prodinfo:respp
                                 })
+                                // console.log(resultRow,"rr");
                                 if(0 == --length){
                                     return callBack(null,resultRow);
                                 }
