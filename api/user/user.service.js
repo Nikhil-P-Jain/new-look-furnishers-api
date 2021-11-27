@@ -24,7 +24,7 @@ module.exports={
                 updated_date],
 
             (error,results,data)=>{
-                // console.log(error,"err-createuser");
+                console.log(error,"err-createuser");
                 if(error){
                     return callBack(error);
                 }

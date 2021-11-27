@@ -20,6 +20,7 @@ module.exports={
     getpurchase_orderbyid:(req,res)=>{
         let id=req.params.id;
         getpurchase_orderbyid(id,(err,results)=>{
+            // console.log(results);
             if(err){
                 return res.status(500).json({
                     success:0,

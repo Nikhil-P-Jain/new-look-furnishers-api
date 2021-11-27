@@ -128,7 +128,7 @@ module.exports={
         });
     },
     login:(req,res)=>{
-        // console.log("nnn");
+        console.log("nnn");
         const body=req.body;
         getUsersbyEmail(body.email,(err,results)=>{
             if(err){
@@ -144,7 +144,7 @@ module.exports={
             if(result){
                 results.password=undefined;
                 results.jsontoken=sign({result:results},"qwe1234",{
-                    expiresIn:"1h"
+                    expiresIn:"2h"
                 });
                 return res.json({
                     success:1,

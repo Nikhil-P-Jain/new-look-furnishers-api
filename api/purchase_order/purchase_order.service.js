@@ -19,12 +19,13 @@ module.exports={
                 purchase_order_updated_date],
 
             (error,results,fields)=>{
+                console.log(error,"errpo");
                 if(error){
                     return callBack(error);
                 }
                 if(results.affectedRows != 0){
                     var purid=results.insertId;
-                    console.log(purid,"purid",data);
+                    // console.log(purid,"purid",data);
                     data.productsinfo.forEach(element => {
                         pool.query(
                             `INSERT INTO purchase_order_specified_product(purchase_order_id,specification_id, purchase_order_specified_product_quantity, unit_id) VALUES (?,?,?,?)
@@ -53,7 +54,7 @@ module.exports={
     getpurchase_order:callBack=>{
         var resultRow=[];
         pool.query(
-            `select p.purchase_order_id,p.project_order_id,p.po_number,pl.project_lead_name,pl.project_lead_name,po.project_quotation_id,p.purchase_order_date,p.purchase_order_description,p.site_id,s.site_name,p.supplier_id,sup.supplier_name,p.purchase_order_status,p.purchase_order_created_date,p.purchase_order_updated_date from purchase_order p join site s on p.site_id=s.site_id join supplier sup on p.supplier_id=sup.supplier_id join project_order po on p.project_order_id=po.project_order_id join project_quotation pq on po.project_quotation_id=pq.project_quotation_id join project_lead pl on pq.project_lead_id=pl.project_lead_id order by p.purchase_order_id`,
+            `select p.purchase_order_id,p.project_order_id,p.po_number,pl.project_lead_name,po.project_quotation_id,p.purchase_order_date,p.purchase_order_description,p.site_id,s.site_name,p.supplier_id,sup.supplier_name,p.purchase_order_status,p.purchase_order_created_date,p.purchase_order_updated_date from purchase_order p join site s on p.site_id=s.site_id join supplier sup on p.supplier_id=sup.supplier_id left join project_order po on p.project_order_id=po.project_order_id left join project_quotation pq on po.project_quotation_id=pq.project_quotation_id left join project_lead pl on pq.project_lead_id=pl.project_lead_id order by p.purchase_order_id;`,
             [],
             (error,results,fields)=>{
                 if(error){
@@ -76,6 +77,7 @@ module.exports={
                         row.purchase_order_id    
                         ],
                         (error,respp,fields)=>{
+                            
                             if(error){
                                 return callBack(error);
                             }
@@ -109,11 +111,14 @@ module.exports={
             })
     },
     getpurchase_orderbyid:(id,callBack)=>{
+        // console.log(id,"id");
         var resultRow=[];
         pool.query(
-            `select p.purchase_order_id,p.project_order_id,p.po_number,po.project_quotation_id,pl.project_lead_name,p.purchase_order_date,p.purchase_order_description,p.site_id,s.site_name,concat(u.first_name," ",u.last_name) as contact_name, u.phone,s.site_address,p.supplier_id,sup.supplier_name,p.purchase_order_status,p.purchase_order_created_date,p.purchase_order_updated_date from purchase_order p join site s on p.site_id=s.site_id join user u on s.site_id=u.site_id join supplier sup on p.supplier_id=sup.supplier_id join project_order po on p.project_order_id=po.project_order_id join project_quotation pq on po.project_quotation_id=pq.project_quotation_id join project_lead pl on pq.project_lead_id=pl.project_lead_id where purchase_order_id=?`,
+            `select p.purchase_order_id,p.project_order_id,p.po_number,po.project_quotation_id,pl.project_lead_name,p.purchase_order_date,p.purchase_order_description,p.site_id,s.site_name,concat(u.first_name," ",u.last_name) as contact_name, u.phone,s.site_address,p.supplier_id,sup.supplier_name,p.purchase_order_status,p.purchase_order_created_date,p.purchase_order_updated_date from purchase_order p join site s on p.site_id=s.site_id join user u on s.site_id=u.site_id join supplier sup on p.supplier_id=sup.supplier_id left join project_order po on p.project_order_id=po.project_order_id left join project_quotation pq on po.project_quotation_id=pq.project_quotation_id left join project_lead pl on pq.project_lead_id=pl.project_lead_id where purchase_order_id=?`,
             [id],
             (error,results,fields)=>{
+                // console.log(error,"error1");
+                // console.log(results,"results1");
                 if(error){
                     return callBack(error);
                 }

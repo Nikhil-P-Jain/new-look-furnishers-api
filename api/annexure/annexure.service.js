@@ -78,7 +78,7 @@ module.exports={
     },
     deleteAnnexure:(id,callBack)=>{
         pool.query(
-            `delete from annexure where annexure_id=?`,
+            `delete from annexure, annexure_details, accessories where annexure_id=?`,
             [id],
             (error,results,fields)=>{
                 if(error){

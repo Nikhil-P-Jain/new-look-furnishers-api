@@ -9,6 +9,12 @@ module.exports={
                     message:err
                 });
             }
+            if(results == "Annexure not created!!"){
+                return res.status(404).json({
+                    success:0,
+                    message:results
+                })
+            }
                 return res.status(200).json({
                     success:1,
                     data:results
