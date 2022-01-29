@@ -48,6 +48,18 @@ module.exports={
             }
         )
     },
+    getproductbrandbyproductid:(id,callBack)=>{
+        pool.query(
+            `select product_brand_id,product_brand_name,product_brand_status,product_brand_created_date,product_brand_updated_date from product_brand where product_id=?`,
+            [id],
+            (error,results,fields)=>{
+                if(error){
+                    return callBack(error);
+                }
+                return callBack(null,results);
+            }
+        )
+    },
     updateProduct_brand:(body,callBack)=>{
         var cur=new Date().toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
         product_brand_updated_date=DATE_FORMATTER(cur,"yyyy-mm-dd hh:MM:ss");

@@ -448,7 +448,7 @@ module.exports={
         var resultRow=[];
         // console.log(id,"id");
         pool.query(
-            `SELECT an.annexure_id,an.purchase_order_id,po.po_number,pl.project_lead_name,sup.supplier_name,st.site_name,st.site_address,an.created_date,an.updated_date,an.status from annexure an left join purchase_order po on po.purchase_order_id=an.purchase_order_id left join project_order pro on po.project_order_id=pro.project_order_id left join project_quotation pq on pro.project_quotation_id=pq.project_quotation_id left join project_lead pl on pq.project_lead_id=pl.project_lead_id left join supplier sup on po.supplier_id=sup.supplier_id left join site st on po.site_id=st.site_id where annexure_id=?`,
+            `SELECT an.annexure_id,an.purchase_order_id,po.po_number,pl.project_lead_name,sup.supplier_name,st.site_name,st.site_address,us.phone,concat(us.first_name," ",us.last_name) as contact_name,an.created_date,an.updated_date,an.status from annexure an join purchase_order po on po.purchase_order_id=an.purchase_order_id join project_order pro on po.project_order_id=pro.project_order_id join project_quotation pq on pro.project_quotation_id=pq.project_quotation_id join project_lead pl on pq.project_lead_id=pq.project_lead_id=pl.project_lead_id join supplier sup on po.supplier_id=sup.supplier_id join site st on po.site_id=st.site_id join user us on st.site_id=us.site_id where annexure_id=?`,
             [id],
             (error,results,fields)=>{
                 if(error){
