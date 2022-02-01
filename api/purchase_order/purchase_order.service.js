@@ -28,11 +28,11 @@ module.exports={
                     // console.log(purid,"purid",data);
                     data.productsinfo.forEach(element => {
                         pool.query(
-                            `INSERT INTO purchase_order_specified_product(purchase_order_id,specification_id, purchase_order_specified_product_quantity, unit_id) VALUES (?,?,?,?)
+                            `INSERT INTO purchase_order_specified_product(purchase_order_id,product_id, purchase_order_specified_product_quantity, unit_id) VALUES (?,?,?,?)
                             `,
                             [
                              purid,
-                             element.specification_id,
+                             element.product_id,
                              element.purchase_order_specified_product_quantity,
                              element.unit_id,
                             ],
@@ -72,7 +72,7 @@ module.exports={
                 var length=results.length;
                 async.each(results,(row,callback)=>{
                     pool.query(
-                        `SELECT po.purchase_order_specified_product_id, po.purchase_order_id, po.specification_id,ps.product_specification_name, po.purchase_order_specified_product_quantity, po.unit_id,u.unit_name FROM purchase_order_specified_product po join  product_specification ps on po.specification_id=ps.product_specification_id join unit u on po.unit_id=u.unit_id where po.purchase_order_id=?`,
+                        `SELECT po.purchase_order_specified_product_id, po.purchase_order_id, po.product_id, p.product_name, po.purchase_order_specified_product_quantity, po.unit_id,u.unit_name FROM purchase_order_specified_product po join product p on po.product_id=p.product_id join unit u on po.unit_id=u.unit_id where po.purchase_order_id=?`,
                         [
                         row.purchase_order_id    
                         ],
@@ -134,7 +134,7 @@ module.exports={
                 var length=results.length;
                 async.each(results,(row,callback)=>{
                     pool.query(
-                        `SELECT po.purchase_order_specified_product_id, po.purchase_order_id, po.specification_id,ps.product_specification_name, po.purchase_order_specified_product_quantity, po.unit_id,u.unit_name,ps.product_id, p.product_name FROM purchase_order_specified_product po join  product_specification ps on po.specification_id=ps.product_specification_id join unit u on po.unit_id=u.unit_id join product p on ps.product_id = p.product_id where po.purchase_order_id=?`,
+                        `SELECT po.purchase_order_specified_product_id, po.purchase_order_id, po.product_id, p.product_name, pc.product_category_id, pc.product_category_name, pb.product_brand_id, pb.product_brand_name, po.purchase_order_specified_product_quantity, po.unit_id,u.unit_name FROM purchase_order_specified_product po join unit u on po.unit_id=u.unit_id join product p on po.product_id = p.product_id join product_category pc on p.product_category_id=pc.product_category_id join product_brand pb on pc.product_brand_id=pb.product_brand_id where po.purchase_order_id=?`,
                         [
                         row.purchase_order_id    
                         ],
@@ -206,11 +206,11 @@ module.exports={
                                 if(results.affectedRows != 0){
                                 body.productsinfo.forEach(element => {
                                     pool.query(
-                                        `INSERT INTO purchase_order_specified_product(purchase_order_id, specification_id, purchase_order_specified_product_quantity, unit_id) VALUES (?,?,?,?)
+                                        `INSERT INTO purchase_order_specified_product(purchase_order_id, product_id, purchase_order_specified_product_quantity, unit_id) VALUES (?,?,?,?)
                                         `,
                                         [
                                          body.purchase_order_id,
-                                         element.specification_id,
+                                         element.product_id,
                                          element.purchase_order_specified_product_quantity,
                                          element.unit_id,
                                         ],
@@ -266,7 +266,7 @@ module.exports={
     getpurchase_orderbyproductid:(id,callBack)=>{
         var fres=[],annexure=[],finalres=[];
         pool.query(
-            `SELECT * from purchase_order_specified_product posp join product_specification ps on posp.specification_id=ps.product_specification_id where ps.product_id=?`,
+            `SELECT * from purchase_order_specified_product posp join product p on posp.product_id=p.product_id where posp.product_id=?`,
             [id],
             (error,results,fields)=>{
                 if(error){
@@ -311,7 +311,7 @@ module.exports={
                                             if(0 == --len){
                                                 finalres.push({
                                                     purchase_order_id:fres[0].purchase_order_id,
-                                                    specification_id:fres[0].specification_id,
+                                                    product_id:fres[0].product_id,
                                                     purchase_order_specified_product_quantity:fres[0].purchase_order_specified_product_quantity,
                                                     annexure:annexure
                                                 })

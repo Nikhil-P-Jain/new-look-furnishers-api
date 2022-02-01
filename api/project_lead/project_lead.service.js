@@ -104,7 +104,7 @@ module.exports={
                     let pld=new Date(element.project_lead_date).toLocaleDateString('en-US',{timeZone:'Asia/Calcutta'});
                     element.project_lead_date=DATE_FORMATTER(pld,"yyyy-mm-dd");
                     const prod= element.product_id;
-                    element.product_id=prod.split(',');
+                    element.product_id=prod.split(',');
                     // console.log(element.product_id);
                 })
                 return callBack(null,results);

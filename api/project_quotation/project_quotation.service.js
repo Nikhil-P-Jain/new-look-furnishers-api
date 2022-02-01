@@ -37,14 +37,14 @@ module.exports={
                             return callBack(error);
                             }
                             if(results.affectedRows != 0){
-                                // console.log(projid,"projid",data.productinfo);
+                                console.log(projid,"projid",data.productinfo);
                                 data.productinfo.forEach(element => {
                                     pool.query(
-                                        `INSERT INTO project_quotation_specified_product(project_quotation_id, product_specification_id, pq_specified_products_quantity, unit_id) VALUES (?,?,?,?)
+                                        `INSERT INTO project_quotation_specified_product(project_quotation_id, product_id, pq_specified_products_quantity, unit_id) VALUES (?,?,?,?)
                                         `,
                                         [
                                          projid,
-                                         element.product_specification_id,
+                                         element.product_id,
                                          element.pq_specified_products_quantity,
                                          element.unit_id,
                                         ],
@@ -120,7 +120,7 @@ module.exports={
                     var length=results.length;
                     async.each(results,(row,callback)=>{
                         pool.query(
-                            `SELECT pop.pq_specified_products_id, pop.project_quotation_id, pop.product_specification_id,ps.product_specification_name, pop.pq_specified_products_quantity, pop.unit_id,u.unit_name, ps.product_id, p.product_name FROM project_quotation_specified_product pop join  product_specification ps on pop.product_specification_id=ps.product_specification_id join unit u on pop.unit_id=u.unit_id join product p on ps.product_id = p.product_id where pop.project_quotation_id=?`,
+                            `SELECT pop.pq_specified_products_id, pop.project_quotation_id, pop.product_id, pc.product_category_id, pc.product_category_name, pb.product_brand_id, pb.product_brand_name, p.product_name,p.product_specification, pop.pq_specified_products_quantity, pop.unit_id, u.unit_name FROM project_quotation_specified_product pop join product p on pop.product_id=p.product_id join unit u on pop.unit_id=u.unit_id join product_category pc on p.product_category_id=pc.product_category_id join product_brand pb on pc.product_brand_id=pb.product_brand_id where pop.project_quotation_id=?`,
                             [   
                                 row.project_quotation_id    
                             ],
@@ -216,10 +216,10 @@ module.exports={
                     if(results.affectedRows != 0){
                     body.productinfo.forEach(element => {
                         pool.query(
-                            `INSERT INTO project_quotation_specified_product(project_quotation_id, product_specification_id, pq_specified_products_quantity, unit_id) VALUES (?,?,?,?)`,
+                            `INSERT INTO project_quotation_specified_product(project_quotation_id, product_id, pq_specified_products_quantity, unit_id) VALUES (?,?,?,?)`,
                             [
                              body.project_quotation_id,
-                             element.product_specification_id,
+                             element.product_id,
                              element.pq_specified_products_quantity,
                              element.unit_id,
                             ],

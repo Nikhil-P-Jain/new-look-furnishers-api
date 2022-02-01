@@ -27,11 +27,11 @@ module.exports={
                     console.log(projid,"projid",data);
                     data.productsinfo.forEach(element => {
                         pool.query(
-                            `INSERT INTO project_order_specified_product(project_order_id, specification_id, project_order_specified_product_quantity, unit_id, project_order_specified_product_status) VALUES (?,?,?,?,1)
+                            `INSERT INTO project_order_specified_product(project_order_id, product_id, project_order_specified_product_quantity, unit_id, project_order_specified_product_status) VALUES (?,?,?,?,1)
                             `,
                             [
                              projid,
-                             element.specification_id,
+                             element.product_id,
                              element.project_order_specified_product_quantity,
                              element.unit_id,
                             ],
@@ -71,7 +71,7 @@ module.exports={
                 var length=results.length;
                 async.each(results,(row,callback)=>{
                     pool.query(
-                        `SELECT pop.project_order_specified_product_id, pop.project_order_id, pop.specification_id,ps.product_specification_name, pop.project_order_specified_product_quantity, pop.unit_id,u.unit_name, pop.project_order_specified_product_status FROM project_order_specified_product pop join  product_specification ps on pop.specification_id=ps.product_specification_id join unit u on pop.unit_id=u.unit_id where pop.project_order_id=?`,
+                        `SELECT pop.project_order_specified_product_id, pop.project_order_id, pop.product_id,p.product_specification, pop.project_order_specified_product_quantity, pop.unit_id,u.unit_name, pop.project_order_specified_product_status FROM project_order_specified_product pop join product p on pop.product_id=p.product_id join unit u on pop.unit_id=u.unit_id where pop.project_order_id=?`,
                         [
                         row.project_order_id    
                         ],
@@ -126,7 +126,7 @@ module.exports={
                 var length=results.length;
                 async.each(results,(row,callback)=>{
                     pool.query(
-                        `SELECT pop.project_order_specified_product_id, pop.project_order_id, pop.specification_id,ps.product_specification_name, pop.project_order_specified_product_quantity, pop.unit_id,u.unit_name, pop.project_order_specified_product_status, ps.product_id, p.product_name FROM project_order_specified_product pop join  product_specification ps on pop.specification_id=ps.product_specification_id join unit u on pop.unit_id=u.unit_id join product p on ps.product_id = p.product_id where pop.project_order_id=?`,
+                        `SELECT pop.project_order_specified_product_id, pop.project_order_id, pop.product_id,p.product_specification, pop.project_order_specified_product_quantity, pop.unit_id,u.unit_name, pop.project_order_specified_product_status, p.product_name FROM project_order_specified_product pop join  product p on pop.product_id=p.product_id join unit u on pop.unit_id=u.unit_id where pop.project_order_id=?`,
                         [
                         row.project_order_id    
                         ],
@@ -192,11 +192,11 @@ module.exports={
                                 if(results.affectedRows != 0){
                                 body.productsinfo.forEach(element => {
                                     pool.query(
-                                        `INSERT INTO project_order_specified_product(project_order_id, specification_id, project_order_specified_product_quantity, unit_id, project_order_specified_product_status) VALUES (?,?,?,?,1)
+                                        `INSERT INTO project_order_specified_product(project_order_id, product_id, project_order_specified_product_quantity, unit_id, project_order_specified_product_status) VALUES (?,?,?,?,1)
                                         `,
                                         [
                                          body.project_order_id,
-                                         element.specification_id,
+                                         element.product_id,
                                          element.project_order_specified_product_quantity,
                                          element.unit_id,
                                         ],

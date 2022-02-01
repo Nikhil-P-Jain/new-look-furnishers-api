@@ -7,8 +7,9 @@ module.exports={
         product_category_updated_date=DATE_FORMATTER(cur,"yyyy-mm-dd hh:MM:ss");
         product_category_status=1;
         pool.query(
-            'insert into product_category(product_category_name,product_category_status,product_category_created_date,product_category_updated_date) values(?,?,?,?)',
+            'insert into product_category(product_category_name,product_brand_id,product_category_status,product_category_created_date,product_category_updated_date) values(?,?,?,?,?)',
             [data.product_category_name,
+            data.product_brand_id,
             product_category_status,
             product_category_created_date,
             product_category_updated_date],
@@ -21,7 +22,7 @@ module.exports={
     },
     getProduct_category:callBack=>{
         pool.query(
-            `select * from product_category`,
+            `select pc.product_category_id,pc.product_category_name,pc.product_brand_id,pb.product_brand_name,pc.product_category_status,pc.product_category_created_date,pc.product_category_updated_date from product_category pc join product_brand pb on pc.product_brand_id=pb.product_brand_id`,
             [],
             (error,results,fields)=>{
                 if(error){
@@ -38,7 +39,19 @@ module.exports={
     },
     getProduct_categorybyid:(id,callBack)=>{
         pool.query(
-            `select product_category_name,product_category_status,product_category_created_date,product_category_updated_date from product_category where product_category_id=?`,
+            `select product_category_name,product_brand_id,product_category_status,product_category_created_date,product_category_updated_date from product_category where product_category_id=?`,
+            [id],
+            (error,results,fields)=>{
+                if(error){
+                    return callBack(error);
+                }
+                return callBack(null,results);
+            }
+        )
+    },
+    get_product_category_by_brand_id:(id,callBack)=>{
+        pool.query(
+            `select pc.product_category_id,pc.product_category_name,pc.product_brand_id,pb.product_brand_name,pc.product_category_status,pc.product_category_created_date,pc.product_category_updated_date from product_category pc join product_brand pb on pc.product_brand_id=pb.product_brand_id where pc.product_brand_id=?`,
             [id],
             (error,results,fields)=>{
                 if(error){
@@ -52,9 +65,10 @@ module.exports={
         var cur=new Date().toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
         product_category_updated_date=DATE_FORMATTER(cur,"yyyy-mm-dd hh:MM:ss");
         pool.query(
-            `update product_category set product_category_name=?,product_category_status=?,product_category_updated_date=? where product_category_id=?`,
+            `update product_category set product_category_name=?,product_brand_id=?,product_category_status=?,product_category_updated_date=? where product_category_id=?`,
             [
                 body.product_category_name,
+                body.product_brand_id,
                 body.product_category_status,
                 product_category_updated_date,
                 body.product_category_id
