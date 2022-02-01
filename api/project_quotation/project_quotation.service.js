@@ -22,7 +22,8 @@ module.exports={
                 project_quotation_updated_date
             ],
             (error,results,data1)=>{
-                console.log(error,"err")
+                // console.log(error,"err")
+                // console.log(results);
                 if(error){
                     return callBack(error);
                 }
@@ -32,12 +33,12 @@ module.exports={
                         `update project_lead set order_status='Quotation Submitted' where project_lead_id=?`,
                         [data.project_lead_id],
                         (error,results,fields)=>{
-                            if(error)
-                            {
-                            return callBack(error);
+                            // console.log(error);
+                            if(error){
+                                return callBack(error);
                             }
                             if(results.affectedRows != 0){
-                                console.log(projid,"projid",data.productinfo);
+                                // console.log(projid,"projid",data.productinfo);
                                 data.productinfo.forEach(element => {
                                     pool.query(
                                         `INSERT INTO project_quotation_specified_product(project_quotation_id, product_id, pq_specified_products_quantity, unit_id) VALUES (?,?,?,?)
@@ -49,6 +50,7 @@ module.exports={
                                          element.unit_id,
                                         ],
                                         (error,results,fields)=>{
+                                            console.log(error);
                                             if(error){
                                                 return callBack(error);
                                             }
