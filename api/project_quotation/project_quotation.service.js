@@ -23,13 +23,40 @@ module.exports={
             ],
             (error,results,data1)=>{
                 // console.log(error,"err")
-                // console.log(results);
+                // console.log(results,data1);
                 if(error){
                     return callBack(error);
                 }
                 if(results.affectedRows != 0){
                     var projid=results.insertId;
-                    pool.query(
+                    if(data.project_lead_id==0){
+                        data.productinfo.forEach(element => {
+                            pool.query(
+                                `INSERT INTO project_quotation_specified_product(project_quotation_id, product_id, pq_specified_products_quantity, unit_id) VALUES (?,?,?,?)
+                                `,
+                                [
+                                 projid,
+                                 element.product_id,
+                                 element.pq_specified_products_quantity,
+                                 element.unit_id,
+                                ],
+                                (error,results,fields)=>{
+                                    console.log(error);
+                                    if(error){
+                                        return callBack(error);
+                                    }
+    
+                                    if(0 == --data.productinfo.length){
+                                        return callBack(null,projid);
+                                    }
+                                }
+                            )
+                        });
+                    }
+                    else{
+                        var projid=results.insertId;
+                        console.log('data',data);
+                        pool.query(
                         `update project_lead set order_status='Quotation Submitted' where project_lead_id=?`,
                         [data.project_lead_id],
                         (error,results,fields)=>{
@@ -65,7 +92,7 @@ module.exports={
                             //return callBack(null,results);
                         }
                     )
-
+                    }
                 }
 
             })
@@ -75,7 +102,7 @@ module.exports={
     getProject_quotation:callBack=>{   
         var resultRow=[];         
         pool.query(
-            `SELECT pq.project_quotation_id,pq.project_lead_id,pl.project_lead_name,pq.client_name,pq.main_contractor,pq.user_id,concat(u.first_name,' ',u.last_name) as user_name,pq.quotation_number,pq.quotation_amount,pq.remarks,pq.date,pq.status,pq.project_quotation_created_date,pq.project_quotation_updated_date FROM project_quotation pq join user u on pq.user_id=u.user_id join project_lead pl on pq.project_lead_id=pl.project_lead_id`,
+            `SELECT pq.project_quotation_id,pq.project_lead_id,pl.project_lead_name,pq.client_name,pq.main_contractor,pq.user_id,concat(u.first_name,' ',u.last_name) as user_name,pq.quotation_number,pq.quotation_amount,pq.remarks,pq.date,pq.status,pq.project_quotation_created_date,pq.project_quotation_updated_date FROM project_quotation pq join user u on pq.user_id=u.user_id left join project_lead pl on pq.project_lead_id=pl.project_lead_id`,
             [],
             (error,results,fields)=>{
                 if(error){

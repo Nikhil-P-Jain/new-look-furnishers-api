@@ -6,6 +6,7 @@ module.exports={
 //         let start =prod_id.replace("[","");
 //         body.product_id= start.replace("]","");
         createProject_quotation(body,(err,results)=>{
+            console.log(body,"body");
             if(err){
                 return res.status(500).json({
                     success:0,
