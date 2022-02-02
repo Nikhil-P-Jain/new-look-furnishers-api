@@ -110,7 +110,7 @@ module.exports={
                     return callBack(error);
                 }
                 results.forEach(element => {
-                    const prod= element.product_id;
+                    const prod= element.product_id;
                     var namee=[],pid=[];
                     let cd=new Date(element.project_quotation_created_date).toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
                     let ud=new Date(element.project_quotation_updated_date).toLocaleString('en-US',{timeZone:'Asia/Calcutta'});

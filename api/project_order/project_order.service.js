@@ -53,7 +53,7 @@ module.exports={
     getProject_order:callBack=>{
         var resultRow=[];
         pool.query(
-            `select p.project_order_id,p.project_quotation_id,pq.quotation_number,pl.project_lead_name,p.project_order_date,p.project_order_description,p.site_id,s.site_name,p.project_order_status,p.project_order_created_date,p.project_order_updated_date from project_order p join site s on p.site_id=s.site_id join project_quotation pq on p.project_quotation_id=pq.project_quotation_id join project_lead pl on pq.project_lead_id=pl.project_lead_id order by p.project_order_id`,
+            `select p.project_order_id,p.project_quotation_id,pq.quotation_number,pl.project_lead_name,p.project_order_date,p.project_order_description,p.site_id,s.site_name,p.project_order_status,p.project_order_created_date,p.project_order_updated_date from project_order p join site s on p.site_id=s.site_id left join project_quotation pq on p.project_quotation_id=pq.project_quotation_id left join project_lead pl on pq.project_lead_id=pl.project_lead_id order by p.project_order_id`,
             [],
             (error,results,fields)=>{
                 if(error){
@@ -108,7 +108,7 @@ module.exports={
     getProject_orderbyid:(id,callBack)=>{
         var resultRow=[];
         pool.query(
-            `select p.project_order_id,p.project_quotation_id,pq.quotation_number,pl.project_lead_name,p.project_order_date,p.project_order_description,p.site_id,s.site_name,p.project_order_status,p.project_order_created_date,p.project_order_updated_date from project_order p join site s on p.site_id=s.site_id join project_quotation pq on p.project_quotation_id=pq.project_quotation_id join project_lead pl on pq.project_lead_id=pl.project_lead_id where p.project_order_id=?`,
+            `select p.project_order_id,p.project_quotation_id,pq.quotation_number,pl.project_lead_name,p.project_order_date,p.project_order_description,p.site_id,s.site_name,p.project_order_status,p.project_order_created_date,p.project_order_updated_date from project_order p join site s on p.site_id=s.site_id left join project_quotation pq on p.project_quotation_id=pq.project_quotation_id left join project_lead pl on pq.project_lead_id=pl.project_lead_id where p.project_order_id=?`,
             [id],
             (error,results,fields)=>{
                 if(error){
