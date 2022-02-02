@@ -71,7 +71,7 @@ module.exports={
                 var length=results.length;
                 async.each(results,(row,callback)=>{
                     pool.query(
-                        `SELECT pop.project_order_specified_product_id, pop.project_order_id, pop.product_id,p.product_specification, pop.project_order_specified_product_quantity, pop.unit_id,u.unit_name, pop.project_order_specified_product_status FROM project_order_specified_product pop join product p on pop.product_id=p.product_id join unit u on pop.unit_id=u.unit_id where pop.project_order_id=?`,
+                        `SELECT pop.project_order_specified_product_id, pop.project_order_id, pop.product_id, p.product_specification,pc.product_category_id,pc.product_category_name,pb.product_brand_id,pb.product_brand_name, pop.project_order_specified_product_quantity, pop.unit_id,u.unit_name, pop.project_order_specified_product_status FROM project_order_specified_product pop join product p on pop.product_id=p.product_id join product_category pc on p.product_category_id=pc.product_category_id join product_brand pb on pc.product_brand_id=pb.product_brand_id join unit u on pop.unit_id=u.unit_id where pop.project_order_id=?`,
                         [
                         row.project_order_id    
                         ],
@@ -126,7 +126,7 @@ module.exports={
                 var length=results.length;
                 async.each(results,(row,callback)=>{
                     pool.query(
-                        `SELECT pop.project_order_specified_product_id, pop.project_order_id, pop.product_id,p.product_specification, pop.project_order_specified_product_quantity, pop.unit_id,u.unit_name, pop.project_order_specified_product_status, p.product_name FROM project_order_specified_product pop join  product p on pop.product_id=p.product_id join unit u on pop.unit_id=u.unit_id where pop.project_order_id=?`,
+                        `SELECT pop.project_order_specified_product_id, pop.project_order_id, pop.product_id,p.product_specification,pc.product_category_id,pc.product_category_name,pb.product_brand_id,pb.product_brand_name, pop.project_order_specified_product_quantity, pop.unit_id,u.unit_name, pop.project_order_specified_product_status, p.product_name FROM project_order_specified_product pop join  product p on pop.product_id=p.product_id join product_category pc on p.product_category_id=pc.product_category_id join product_brand pb on pc.product_brand_id=pb.product_brand_id join unit u on pop.unit_id=u.unit_id where pop.project_order_id=?`,
                         [
                         row.project_order_id    
                         ],

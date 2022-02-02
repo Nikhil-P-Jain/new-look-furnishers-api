@@ -72,7 +72,7 @@ module.exports={
                 var length=results.length;
                 async.each(results,(row,callback)=>{
                     pool.query(
-                        `SELECT po.purchase_order_specified_product_id, po.purchase_order_id, po.product_id, p.product_name, po.purchase_order_specified_product_quantity, po.unit_id,u.unit_name FROM purchase_order_specified_product po join product p on po.product_id=p.product_id join unit u on po.unit_id=u.unit_id where po.purchase_order_id=?`,
+                        `SELECT po.purchase_order_specified_product_id, po.purchase_order_id, po.product_id, p.product_name, p.product_specification, pc.product_category_id, pc.product_category_name, pb.product_brand_id, pb.product_brand_name, po.purchase_order_specified_product_quantity, po.unit_id,u.unit_name FROM purchase_order_specified_product po join product p on po.product_id=p.product_id join product_category pc on p.product_category_id=pc.product_category_id join product_brand pb on pc.product_brand_id=pb.product_brand_id join unit u on po.unit_id=u.unit_id where po.purchase_order_id=?`,
                         [
                         row.purchase_order_id    
                         ],
@@ -134,7 +134,7 @@ module.exports={
                 var length=results.length;
                 async.each(results,(row,callback)=>{
                     pool.query(
-                        `SELECT po.purchase_order_specified_product_id, po.purchase_order_id, po.product_id, p.product_name, pc.product_category_id, pc.product_category_name, pb.product_brand_id, pb.product_brand_name, po.purchase_order_specified_product_quantity, po.unit_id,u.unit_name FROM purchase_order_specified_product po join unit u on po.unit_id=u.unit_id join product p on po.product_id = p.product_id join product_category pc on p.product_category_id=pc.product_category_id join product_brand pb on pc.product_brand_id=pb.product_brand_id where po.purchase_order_id=?`,
+                        `SELECT po.purchase_order_specified_product_id, po.purchase_order_id, po.product_id, p.product_name, p.product_specification, pc.product_category_id, pc.product_category_name, pb.product_brand_id, pb.product_brand_name, po.purchase_order_specified_product_quantity, po.unit_id,u.unit_name FROM purchase_order_specified_product po join unit u on po.unit_id=u.unit_id join product p on po.product_id = p.product_id join product_category pc on p.product_category_id=pc.product_category_id join product_brand pb on pc.product_brand_id=pb.product_brand_id where po.purchase_order_id=?`,
                         [
                         row.purchase_order_id    
                         ],
