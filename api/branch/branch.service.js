@@ -21,7 +21,7 @@ module.exports = {
     },
     getBranch: callBack => {
         pool.query(
-            `select b.branch_name,b.branch_address,b.gst_no,b.header,b.footer,b.status,b.city_id,c.city_name from branch b join city c on b.city_id=c.city_id`,
+            `select b.branch_id,b.branch_name,b.branch_address,b.gst_no,b.header,b.footer,b.status,b.city_id,c.city_name from branch b join city c on b.city_id=c.city_id`,
             [],
             (error, results, fields) => {
                 if (error) {
