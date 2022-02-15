@@ -8,7 +8,7 @@ module.exports={
         project_quotation_created_date=DATE_FORMATTER(cur,"yyyy-mm-dd hh:MM:ss");
         project_quotation_updated_date=DATE_FORMATTER(cur,"yyyy-mm-dd hh:MM:ss");
         pool.query(
-            'INSERT INTO project_quotation (project_lead_id,client_name,main_contractor,user_id,quotation_number,quotation_amount,remarks,date,status,project_quotation_created_date,project_quotation_updated_date) values (?,?,?,?,?,?,?,?,1,?,?)',
+            'INSERT INTO project_quotation (project_lead_id,client_name,main_contractor,user_id,quotation_number,quotation_amount,branch_id,term_id,remarks,date,status,project_quotation_created_date,project_quotation_updated_date) values (?,?,?,?,?,?,?,?,1,?,?)',
             [
                 data.project_lead_id,
                 data.client_name,
@@ -16,6 +16,8 @@ module.exports={
                 data.user_id,
                 data.quotation_number,
                 data.quotation_amount,
+                data.branch_id,
+                data.term_id,
                 data.remarks,
                 data.date,    
                 project_quotation_created_date,
@@ -102,7 +104,7 @@ module.exports={
     getProject_quotation:callBack=>{   
         var resultRow=[];         
         pool.query(
-            `SELECT pq.project_quotation_id,pq.project_lead_id,pl.project_lead_name,pq.client_name,pq.main_contractor,pq.user_id,concat(u.first_name,' ',u.last_name) as user_name,pq.quotation_number,pq.quotation_amount,pq.remarks,pq.date,pq.status,pq.project_quotation_created_date,pq.project_quotation_updated_date FROM project_quotation pq join user u on pq.user_id=u.user_id left join project_lead pl on pq.project_lead_id=pl.project_lead_id`,
+            `SELECT pq.project_quotation_id,pq.project_lead_id,pl.project_lead_name,pq.client_name,pq.main_contractor,pq.user_id,concat(u.first_name,' ',u.last_name) as user_name,pq.quotation_number,pq.quotation_amount,pq.branch_id,b.branch_name,pq.term_id,t.term_name,t.term,pq.remarks,pq.date,pq.status,pq.project_quotation_created_date,pq.project_quotation_updated_date FROM project_quotation pq join user u on pq.user_id=u.user_id left join project_lead pl on pq.project_lead_id=pl.project_lead_id join branch b on pq.branch_id=b.branch_id join terms t on pq.term_id=t.term_id`,
             [],
             (error,results,fields)=>{
                 if(error){
@@ -126,7 +128,8 @@ module.exports={
     getProject_quotationbyid:(id,callBack)=>{
         var resultRow=[];
         pool.query(
-            `SELECT project_quotation_id,project_lead_id,client_name,main_contractor,user_id,quotation_number,quotation_amount,remarks,date,status,project_quotation_created_date,project_quotation_updated_date FROM project_quotation where project_quotation_id=?`,
+            `SELECT project_quotation_id,project_lead_id,client_name,main_contractor,user_id,quotation_number,quotation_amount,term_id,branch_id,remarks,date,status,project_quotation_created_date,project_quotation_updated_date FROM project_quotation where project_quotation_id=?`,
+            // `select * from project_quotation where project_quotation_id=?`
             // `SELECT pq.project_quotation_id,pl.project_lead_id,pl.project_lead_name,pq.client_name,main_contractor,concat(u.first_name,' ',u.last_name) as user_name,pq.quotation_number,pq.quotation_amount,p.product_id,p.product_name,pq.remarks,pq.date,pq.status,pq.project_quotation_created_date,pq.project_quotation_updated_date FROM project_quotation pq join user u on pq.user_id=u.user_id join project_lead pl on pq.project_lead_id=pl.project_lead_id join product p on pq.product_id=p.product_id where project_quotation_id=?`,
             [id],
             (error,results,fields)=>{
@@ -165,6 +168,8 @@ module.exports={
                                     user_id:row.user_id,
                                     quotation_number:row.quotation_number,
                                     quotation_amount:row.quotation_amount,
+                                    branch_id:row.branch_id,
+                                    term_id:row.term_id,
                                     remarks:row.remarks,
                                     date:row.date,
                                     status:row.status,
@@ -188,7 +193,7 @@ module.exports={
     getpqdetailsbyid:(id,callBack)=>{
         var resultRow=[];         
         pool.query(
-            `SELECT pq.project_quotation_id,pq.project_lead_id,pl.project_lead_name,pq.client_name,pq.main_contractor,pq.user_id,concat(u.first_name,' ',u.last_name) as user_name,pq.quotation_number,pq.quotation_amount,pq.remarks,pq.date,pq.status,pq.project_quotation_created_date,pq.project_quotation_updated_date FROM project_quotation pq join user u on pq.user_id=u.user_id join project_lead pl on pq.project_lead_id=pl.project_lead_id where project_quotation_id=?`,
+            `SELECT pq.project_quotation_id,pq.project_lead_id,pl.project_lead_name,pq.client_name,pq.main_contractor,pq.user_id,concat(u.first_name,' ',u.last_name) as user_name,pq.quotation_number,pq.quotation_amount,pq.branch_id,b.branch_name,b.branch_address,b.gst_no,b.header,b.footer,pq.term_id,t.term_name,t.term,pq.remarks,pq.date,pq.status,pq.project_quotation_created_date,pq.project_quotation_updated_date FROM project_quotation pq join user u on pq.user_id=u.user_id left join project_lead pl on pq.project_lead_id=pl.project_lead_id join branch b on pq.branch_id=b.branch_id join terms t on pq.term_id=t.term_id where project_quotation_id=?`,
             [id],
             (error,results,fields)=>{
                 if(error){
@@ -212,7 +217,7 @@ module.exports={
         var cur=new Date().toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
         project_quotation_updated_date=DATE_FORMATTER(cur,"yyyy-mm-dd hh:MM:ss");
         pool.query(
-            `update project_quotation set project_lead_id=?,client_name=?,main_contractor=?,user_id=?,quotation_number=?,quotation_amount=?,remarks=?,date=?,status=?,project_quotation_updated_date=? where project_quotation_id=?`,
+            `update project_quotation set project_lead_id=?,client_name=?,main_contractor=?,user_id=?,quotation_number=?,quotation_amount=?,branch_id=?,term_id=?,,remarks=?,date=?,status=?,project_quotation_updated_date=? where project_quotation_id=?`,
             [
                 body.project_lead_id,
                 body.client_name,
@@ -220,6 +225,8 @@ module.exports={
                 body.user_id,
                 body.quotation_number,
                 body.quotation_amount,
+                body.branch_id,
+                body.term_id,
                 body.remarks,
                 body.date,
                 body.status,
