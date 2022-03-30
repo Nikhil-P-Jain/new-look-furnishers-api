@@ -1,48 +1,50 @@
 const pool = require('../../config/db');
-const DATE_FORMATTER=require('dateformat');
+const DATE_FORMATTER = require('dateformat');
 var async = require('async');
-module.exports={
-    createpurchase_order:(data,callBack)=>{
-        var cur=new Date().toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
-        purchase_order_created_date=DATE_FORMATTER(cur,"yyyy-mm-dd hh:MM:ss");
-        purchase_order_updated_date=DATE_FORMATTER(cur,"yyyy-mm-dd hh:MM:ss");
+module.exports = {
+    createpurchase_order: (data, callBack) => {
+        var cur = new Date().toLocaleString('en-US', { timeZone: 'Asia/Calcutta' });
+        purchase_order_created_date = DATE_FORMATTER(cur, "yyyy-mm-dd hh:MM:ss");
+        purchase_order_updated_date = DATE_FORMATTER(cur, "yyyy-mm-dd hh:MM:ss");
         pool.query(
-            'insert into purchase_order (project_order_id,po_number,purchase_order_date,purchase_order_description,site_id,supplier_id,purchase_order_status,purchase_order_created_date,purchase_order_updated_date) values(?,?,?,?,?,?,1,?,?)',
+            'insert into purchase_order (project_order_id,po_number,purchase_order_date,purchase_order_description,site_id,branch_id,term_id,supplier_id,purchase_order_status,purchase_order_created_date,purchase_order_updated_date) values(?,?,?,?,?,?,1,?,?)',
             [
                 data.project_order_id,
                 data.po_number,
                 data.purchase_order_date,
                 data.purchase_order_description,
                 data.site_id,
+                data.branch_id,
+                data.term_id,
                 data.supplier_id,
                 purchase_order_created_date,
                 purchase_order_updated_date],
 
-            (error,results,fields)=>{
-                console.log(error,"errpo");
-                if(error){
+            (error, results, fields) => {
+                console.log(error, "errpo");
+                if (error) {
                     return callBack(error);
                 }
-                if(results.affectedRows != 0){
-                    var purid=results.insertId;
+                if (results.affectedRows != 0) {
+                    var purid = results.insertId;
                     // console.log(purid,"purid",data);
                     data.productsinfo.forEach(element => {
                         pool.query(
                             `INSERT INTO purchase_order_specified_product(purchase_order_id,product_id, purchase_order_specified_product_quantity, unit_id) VALUES (?,?,?,?)
                             `,
                             [
-                             purid,
-                             element.product_id,
-                             element.purchase_order_specified_product_quantity,
-                             element.unit_id,
+                                purid,
+                                element.product_id,
+                                element.purchase_order_specified_product_quantity,
+                                element.unit_id,
                             ],
-                            (error,results,fields)=>{
-                                if(error){
+                            (error, results, fields) => {
+                                if (error) {
                                     return callBack(error);
                                 }
 
-                                if(0 == --data.productsinfo.length){
-                                    return callBack(null,purid);
+                                if (0 == --data.productsinfo.length) {
+                                    return callBack(null, purid);
                                 }
                             }
                         )
@@ -51,284 +53,308 @@ module.exports={
                 // return callBack(null,results);
             })
     },
-    getpurchase_order:callBack=>{
-        var resultRow=[];
+    getpurchase_order: callBack => {
+        var resultRow = [];
         pool.query(
-            `select p.purchase_order_id,p.project_order_id,p.po_number,pl.project_lead_name,po.project_quotation_id,p.purchase_order_date,p.purchase_order_description,p.site_id,s.site_name,p.supplier_id,sup.supplier_name,p.purchase_order_status,p.purchase_order_created_date,p.purchase_order_updated_date from purchase_order p join site s on p.site_id=s.site_id join supplier sup on p.supplier_id=sup.supplier_id left join project_order po on p.project_order_id=po.project_order_id left join project_quotation pq on po.project_quotation_id=pq.project_quotation_id left join project_lead pl on pq.project_lead_id=pl.project_lead_id order by p.purchase_order_id;`,
+            `select p.purchase_order_id,p.project_order_id,p.po_number,pl.project_lead_name,po.project_quotation_id,p.purchase_order_date,p.purchase_order_description,p.site_id,s.site_name,p.branch_id,b.branch_name,b.branch_address,b.gst_no,b.city_id,c.city_name,b.header,b.footer,p.term_id,t.term_name,t.term,p.supplier_id,sup.supplier_name,p.purchase_order_status,p.purchase_order_created_date,p.purchase_order_updated_date from purchase_order p join site s on p.site_id=s.site_id join supplier sup on p.supplier_id=sup.supplier_id left join project_order po on p.project_order_id=po.project_order_id left join project_quotation pq on po.project_quotation_id=pq.project_quotation_id left join project_lead pl on pq.project_lead_id=pl.project_lead_id join branch b on p.branch_id=b.branch_id join terms t on p.term_id=t.term_id join city c on b.city_id=c.city_id order by p.purchase_order_id;`,
             [],
-            (error,results,fields)=>{
-                if(error){
+            (error, results, fields) => {
+                if (error) {
                     return callBack(error);
                 }
-                if(results.length != 0){
-                results.forEach(element => {
-                    let cd=new Date(element.purchase_order_created_date).toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
-                    let ud=new Date(element.purchase_order_updated_date).toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
-                    let pod=new Date(element.purchase_order_date).toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
-                    element.purchase_order_created_date=DATE_FORMATTER(cd,"yyyy-mm-dd hh:MM:ss");
-                    element.purchase_order_updated_date=DATE_FORMATTER(ud,"yyyy-mm-dd hh:MM:ss");
-                    element.purchase_order_date=DATE_FORMATTER(pod,"yyyy-mm-dd");
-                });
-                var length=results.length;
-                async.each(results,(row,callback)=>{
-                    pool.query(
-                        `SELECT po.purchase_order_specified_product_id, po.purchase_order_id, po.product_id, p.product_name, p.product_specification, pc.product_category_id, pc.product_category_name, pb.product_brand_id, pb.product_brand_name, po.purchase_order_specified_product_quantity, po.unit_id,u.unit_name FROM purchase_order_specified_product po join product p on po.product_id=p.product_id join product_category pc on p.product_category_id=pc.product_category_id join product_brand pb on pc.product_brand_id=pb.product_brand_id join unit u on po.unit_id=u.unit_id where po.purchase_order_id=?`,
-                        [
-                        row.purchase_order_id    
-                        ],
-                        (error,respp,fields)=>{
-                            
-                            if(error){
-                                return callBack(error);
-                            }
-                            resultRow.push({
-                                purchase_order_id:row.purchase_order_id,
-                                project_order_id:row.project_order_id,
-                                po_number:row.po_number,
-                                project_quotation_id:row.project_quotation_id,
-                                project_lead_name:row.project_lead_name,
-                                purchase_order_date:row.purchase_order_date,
-                                purchase_order_description:row.purchase_order_description,
-                                site_id:row.site_id,
-                                site_name:row.site_name,
-                                supplier_id:row.supplier_id,
-                                supplier_name:row.supplier_name,
-                                purchase_order_status:row.purchase_order_status,
-                                purchase_order_created_date:row.purchase_order_created_date,
-                                purchase_order_updated_date:row.purchase_order_updated_date,
-                                productinfo:respp
-                            })
+                if (results.length != 0) {
+                    results.forEach(element => {
+                        let cd = new Date(element.purchase_order_created_date).toLocaleString('en-US', { timeZone: 'Asia/Calcutta' });
+                        let ud = new Date(element.purchase_order_updated_date).toLocaleString('en-US', { timeZone: 'Asia/Calcutta' });
+                        let pod = new Date(element.purchase_order_date).toLocaleString('en-US', { timeZone: 'Asia/Calcutta' });
+                        element.purchase_order_created_date = DATE_FORMATTER(cd, "yyyy-mm-dd hh:MM:ss");
+                        element.purchase_order_updated_date = DATE_FORMATTER(ud, "yyyy-mm-dd hh:MM:ss");
+                        element.purchase_order_date = DATE_FORMATTER(pod, "yyyy-mm-dd");
+                    });
+                    var length = results.length;
+                    async.each(results, (row, callback) => {
+                        pool.query(
+                            `SELECT po.purchase_order_specified_product_id, po.purchase_order_id, po.product_id, p.product_name, p.product_specification, pc.product_category_id, pc.product_category_name, pb.product_brand_id, pb.product_brand_name, po.purchase_order_specified_product_quantity, po.unit_id,u.unit_name FROM purchase_order_specified_product po join product p on po.product_id=p.product_id join product_category pc on p.product_category_id=pc.product_category_id join product_brand pb on pc.product_brand_id=pb.product_brand_id join unit u on po.unit_id=u.unit_id where po.purchase_order_id=?`,
+                            [
+                                row.purchase_order_id
+                            ],
+                            (error, respp, fields) => {
 
-                            if(0 == --length){
-                                return callBack(null,resultRow);
+                                if (error) {
+                                    return callBack(error);
+                                }
+                                resultRow.push({
+                                    purchase_order_id: row.purchase_order_id,
+                                    project_order_id: row.project_order_id,
+                                    po_number: row.po_number,
+                                    project_quotation_id: row.project_quotation_id,
+                                    project_lead_name: row.project_lead_name,
+                                    purchase_order_date: row.purchase_order_date,
+                                    purchase_order_description: row.purchase_order_description,
+                                    site_id: row.site_id,
+                                    site_name: row.site_name,
+                                    branch_id: row.branch_id,
+                                    branch_name: row.branch_name,
+                                    branch_address: row.branch_address,
+                                    gst_no: row.gst_no,
+                                    city_id: row.city_id,
+                                    city_name: row.city_name,
+                                    header: row.header,
+                                    footer: row.footer,
+                                    term_id: row.term_id,
+                                    term_name: row.term_name,
+                                    term: row.term,
+                                    supplier_id: row.supplier_id,
+                                    supplier_name: row.supplier_name,
+                                    purchase_order_status: row.purchase_order_status,
+                                    purchase_order_created_date: row.purchase_order_created_date,
+                                    purchase_order_updated_date: row.purchase_order_updated_date,
+                                    productinfo: respp
+                                })
+
+                                if (0 == --length) {
+                                    return callBack(null, resultRow);
+                                }
                             }
-                        }
-                    )
-                })
-                }else{   
-                return callBack(null,results);
+                        )
+                    })
+                } else {
+                    return callBack(null, results);
                 }
             })
     },
-    getpurchase_orderbyid:(id,callBack)=>{
+    getpurchase_orderbyid: (id, callBack) => {
         // console.log(id,"id");
-        var resultRow=[];
+        var resultRow = [];
         pool.query(
-            `select p.purchase_order_id,p.project_order_id,p.po_number,po.project_quotation_id,pl.project_lead_name,p.purchase_order_date,p.purchase_order_description,p.site_id,s.site_name,s.site_address,p.supplier_id,sup.supplier_name,p.purchase_order_status,p.purchase_order_created_date,p.purchase_order_updated_date from purchase_order p join site s on p.site_id=s.site_id join supplier sup on p.supplier_id=sup.supplier_id left join project_order po on p.project_order_id=po.project_order_id left join project_quotation pq on po.project_quotation_id=pq.project_quotation_id left join project_lead pl on pq.project_lead_id=pl.project_lead_id where purchase_order_id=?`,
+            `select p.purchase_order_id,p.project_order_id,p.po_number,po.project_quotation_id,pl.project_lead_name,p.purchase_order_date,p.purchase_order_description,p.site_id,s.site_name,s.site_address,p.branch_id,b.branch_name,b.branch_address,b.gst_no,b.city_id,c.city_name,b.header,b.footer,p.term_id,t.term_name,t.term,p.supplier_id,sup.supplier_name,p.purchase_order_status,p.purchase_order_created_date,p.purchase_order_updated_date from purchase_order p join site s on p.site_id=s.site_id join supplier sup on p.supplier_id=sup.supplier_id left join project_order po on p.project_order_id=po.project_order_id left join project_quotation pq on po.project_quotation_id=pq.project_quotation_id left join project_lead pl on pq.project_lead_id=pl.project_lead_id join branch b on p.branch_id=b.branch_id join terms t on p.term_id=t.term_id join city c on b.city_id=c.city_id where purchase_order_id=?`,
             [id],
-            (error,results,fields)=>{
+            (error, results, fields) => {
                 // console.log(error,"error1");
                 // console.log(results,"results1");
-                if(error){
+                if (error) {
                     return callBack(error);
                 }
-                if(results.length != 0){
-                results.forEach(element => {
-                    let cd=new Date(element.purchase_order_created_date).toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
-                    let ud=new Date(element.purchase_order_updated_date).toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
-                    let pod=new Date(element.purchase_order_date).toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
-                    element.purchase_order_created_date=DATE_FORMATTER(cd,"yyyy-mm-dd hh:MM:ss");
-                    element.purchase_order_updated_date=DATE_FORMATTER(ud,"yyyy-mm-dd hh:MM:ss");
-                    element.purchase_order_date=DATE_FORMATTER(pod,"yyyy-mm-dd");
-                });
-                var length=results.length;
-                async.each(results,(row,callback)=>{
-                    pool.query(
-                        `SELECT po.purchase_order_specified_product_id, po.purchase_order_id, po.product_id, p.product_name, p.product_specification, pc.product_category_id, pc.product_category_name, pb.product_brand_id, pb.product_brand_name, po.purchase_order_specified_product_quantity, po.unit_id,u.unit_name FROM purchase_order_specified_product po join unit u on po.unit_id=u.unit_id join product p on po.product_id = p.product_id join product_category pc on p.product_category_id=pc.product_category_id join product_brand pb on pc.product_brand_id=pb.product_brand_id where po.purchase_order_id=?`,
-                        [
-                        row.purchase_order_id    
-                        ],
-                        (error,respp,fields)=>{
-                            if(error){
-                                return callBack(error);
-                            }
-                            resultRow.push({
-                                purchase_order_id:row.purchase_order_id,
-                                project_order_id:row.project_order_id,
-                                po_number:row.po_number,
-                                project_lead_name:row.project_lead_name,
-                                project_quotation_id:row.project_quotation_id,
-                                purchase_order_date:row.purchase_order_date,
-                                purchase_order_description:row.purchase_order_description,
-                                site_id:row.site_id,
-                                site_name:row.site_name,
-                                site_address:row.site_address,
-                                supplier_id:row.supplier_id,
-                                supplier_name:row.supplier_name,
-                                purchase_order_status:row.purchase_order_status,
-                                purchase_order_created_date:row.purchase_order_created_date,
-                                purchase_order_updated_date:row.purchase_order_updated_date,
-                                productinfo:respp
-                            })
+                if (results.length != 0) {
+                    results.forEach(element => {
+                        let cd = new Date(element.purchase_order_created_date).toLocaleString('en-US', { timeZone: 'Asia/Calcutta' });
+                        let ud = new Date(element.purchase_order_updated_date).toLocaleString('en-US', { timeZone: 'Asia/Calcutta' });
+                        let pod = new Date(element.purchase_order_date).toLocaleString('en-US', { timeZone: 'Asia/Calcutta' });
+                        element.purchase_order_created_date = DATE_FORMATTER(cd, "yyyy-mm-dd hh:MM:ss");
+                        element.purchase_order_updated_date = DATE_FORMATTER(ud, "yyyy-mm-dd hh:MM:ss");
+                        element.purchase_order_date = DATE_FORMATTER(pod, "yyyy-mm-dd");
+                    });
+                    var length = results.length;
+                    async.each(results, (row, callback) => {
+                        pool.query(
+                            `SELECT po.purchase_order_specified_product_id, po.purchase_order_id, po.product_id, p.product_name, p.product_specification, pc.product_category_id, pc.product_category_name, pb.product_brand_id, pb.product_brand_name, po.purchase_order_specified_product_quantity, po.unit_id,u.unit_name FROM purchase_order_specified_product po join unit u on po.unit_id=u.unit_id join product p on po.product_id = p.product_id join product_category pc on p.product_category_id=pc.product_category_id join product_brand pb on pc.product_brand_id=pb.product_brand_id where po.purchase_order_id=?`,
+                            [
+                                row.purchase_order_id
+                            ],
+                            (error, respp, fields) => {
+                                if (error) {
+                                    return callBack(error);
+                                }
+                                resultRow.push({
+                                    purchase_order_id: row.purchase_order_id,
+                                    project_order_id: row.project_order_id,
+                                    po_number: row.po_number,
+                                    project_lead_name: row.project_lead_name,
+                                    project_quotation_id: row.project_quotation_id,
+                                    purchase_order_date: row.purchase_order_date,
+                                    purchase_order_description: row.purchase_order_description,
+                                    site_id: row.site_id,
+                                    site_name: row.site_name,
+                                    site_address: row.site_address,
+                                    branch_id: row.branch_id,
+                                    branch_name: row.branch_name,
+                                    branch_address: row.branch_address,
+                                    gst_no: row.gst_no,
+                                    city_id: row.city_id,
+                                    header: row.header,
+                                    footer: row.footer,
+                                    term_id: row.term_id,
+                                    term_name: row.term_name,
+                                    term: row.term,
+                                    supplier_id: row.supplier_id,
+                                    supplier_name: row.supplier_name,
+                                    purchase_order_status: row.purchase_order_status,
+                                    purchase_order_created_date: row.purchase_order_created_date,
+                                    purchase_order_updated_date: row.purchase_order_updated_date,
+                                    productinfo: respp
+                                })
 
-                            if(0 == --length){
-                                return callBack(null,resultRow);
+                                if (0 == --length) {
+                                    return callBack(null, resultRow);
+                                }
                             }
-                        }
-                    )
-                })
-                }else{   
-                return callBack(null,results);
+                        )
+                    })
+                } else {
+                    return callBack(null, results);
                 }
             })
     },
-    updatepurchase_order:(body,callBack)=>{
-        var cur=new Date().toLocaleString('en-US',{timeZone:'Asia/Calcutta'});
-        purchase_order_updated_date=DATE_FORMATTER(cur,"yyyy-mm-dd hh:MM:ss");
+    updatepurchase_order: (body, callBack) => {
+        var cur = new Date().toLocaleString('en-US', { timeZone: 'Asia/Calcutta' });
+        purchase_order_updated_date = DATE_FORMATTER(cur, "yyyy-mm-dd hh:MM:ss");
+        pool.query(
+            'update purchase_order set project_order_id=?,po_number=?,purchase_order_date=?,purchase_order_description=?,site_id=?,branch_id=?,term_id=?,supplier_id=?,purchase_order_status=?,purchase_order_updated_date=? where purchase_order_id=?',
+            [
+                body.project_order_id,
+                body.po_number,
+                body.purchase_order_date,
+                body.purchase_order_description,
+                body.site_id,
+                body.branch_id,
+                body.term_id,
+                body.supplier_id,
+                body.purchase_order_status,
+                purchase_order_updated_date,
+                body.purchase_order_id
+            ],
+            (error, results, fields) => {
+                if (error) {
+                    return callBack(error);
+                }
+                if (results.affectedRows != 0) {
+                    var product = results.affectedRows;
                     pool.query(
-                        'update purchase_order set project_order_id=?,po_number=?,purchase_order_date=?,purchase_order_description=?,site_id=?,supplier_id=?,purchase_order_status=?,purchase_order_updated_date=? where purchase_order_id=?',    
+                        `delete from purchase_order_specified_product where purchase_order_id=?`,
                         [
-                            body.project_order_id,
-                            body.po_number,
-                            body.purchase_order_date,
-                            body.purchase_order_description,
-                            body.site_id,
-                            body.supplier_id,
-                            body.purchase_order_status,
-                            purchase_order_updated_date,
                             body.purchase_order_id
                         ],
-                        (error,results,fields)=>{
-                            if(error){
+                        (error, results, fields) => {
+                            if (error) {
                                 return callBack(error);
                             }
-                            if(results.affectedRows != 0){
-                                var product=results.affectedRows;
-                                pool.query(
-                                    `delete from purchase_order_specified_product where purchase_order_id=?`,
-                                    [
-                                     body.purchase_order_id   
-                                    ],
-                                    (error,results,fields)=>{
-                                        if(error){
-                                            return callBack(error);
-                                        }
-                                if(results.affectedRows != 0){
+                            if (results.affectedRows != 0) {
                                 body.productsinfo.forEach(element => {
                                     pool.query(
                                         `INSERT INTO purchase_order_specified_product(purchase_order_id, product_id, purchase_order_specified_product_quantity, unit_id) VALUES (?,?,?,?)
                                         `,
                                         [
-                                         body.purchase_order_id,
-                                         element.product_id,
-                                         element.purchase_order_specified_product_quantity,
-                                         element.unit_id,
+                                            body.purchase_order_id,
+                                            element.product_id,
+                                            element.purchase_order_specified_product_quantity,
+                                            element.unit_id,
                                         ],
-                                        (error,results,fields)=>{
-                                            if(error){
+                                        (error, results, fields) => {
+                                            if (error) {
                                                 return callBack(error);
                                             }
-            
-                                            if(0 == --body.productsinfo.length){
-                                                return callBack(null,product);
+
+                                            if (0 == --body.productsinfo.length) {
+                                                return callBack(null, product);
                                             }
                                         }
                                     )
                                 });
-                            }else{
-                            return callBack(null,results);
+                            } else {
+                                return callBack(null, results);
                             }
                         }
                     )
-                }else{
-                    return callBack(null,results)
+                } else {
+                    return callBack(null, results)
                 }
             }
         )
     },
-    deletepurchase_order:(id,callBack)=>{
+    deletepurchase_order: (id, callBack) => {
         pool.query(
             `delete from purchase_order where purchase_order_id=?`,
             [id],
-            (error,results,fields)=>{
-                if(error){
+            (error, results, fields) => {
+                if (error) {
                     return callBack(error);
                 }
-                if(results.affectedRows != 0){
+                if (results.affectedRows != 0) {
                     pool.query(
                         `delete from purchase_order_specified_product where purchase_order_id=?`,
                         [
-                         id   
+                            id
                         ],
-                        (error,results,fields)=>{
-                            if(error){
+                        (error, results, fields) => {
+                            if (error) {
                                 return callBack(error);
                             }
-                            return callBack(null,results);
+                            return callBack(null, results);
                         }
                     )
-                }else{
-                return callBack(null,results);
+                } else {
+                    return callBack(null, results);
                 }
             }
-        )        
+        )
     },
-    getpurchase_orderbyproductid:(id,callBack)=>{
-        var fres=[],annexure=[],finalres=[];
+    getpurchase_orderbyproductid: (id, callBack) => {
+        var fres = [], annexure = [], finalres = [];
         pool.query(
             `SELECT * from purchase_order_specified_product posp join product p on posp.product_id=p.product_id where posp.product_id=?`,
             [id],
-            (error,results,fields)=>{
-                if(error){
+            (error, results, fields) => {
+                if (error) {
                     return callBack(error);
                 }
-                if(results.length !=0){
-                    fres=results;
+                if (results.length != 0) {
+                    fres = results;
                     pool.query(
                         `select * from annexure where purchase_order_id=?`,
                         [
-                          fres[0].purchase_order_id  
+                            fres[0].purchase_order_id
                         ],
-                        (error,resul,fields)=>{
-                            if(error){
+                        (error, resul, fields) => {
+                            if (error) {
                                 return callBack(error)
                             }
-                            if(resul.length != 0){
-                                var len=resul.length;
+                            if (resul.length != 0) {
+                                var len = resul.length;
                                 resul.forEach(element => {
                                     pool.query(
                                         `select * from annexure_details where annexure_id=? and product_id=?`,
                                         [
-                                         element.annexure_id,
-                                         id  
+                                            element.annexure_id,
+                                            id
                                         ],
-                                        (error,results,fields)=>{
-                                            if(error){
+                                        (error, results, fields) => {
+                                            if (error) {
                                                 return callBack(error);
                                             }
-                                            if(results.length != 0){
+                                            if (results.length != 0) {
                                                 results.forEach(element => {
                                                     annexure.push({
-                                                        annexure_id:element.annexure_id,
-                                                        product_id:element.product_id,
-                                                        length:element.length,
-                                                        quantity:element.quantity,
-                                                        area:element.area
-                                                    })       
+                                                        annexure_id: element.annexure_id,
+                                                        product_id: element.product_id,
+                                                        length: element.length,
+                                                        quantity: element.quantity,
+                                                        area: element.area
+                                                    })
                                                 });
                                             }
 
-                                            if(0 == --len){
+                                            if (0 == --len) {
                                                 finalres.push({
-                                                    purchase_order_id:fres[0].purchase_order_id,
-                                                    product_id:fres[0].product_id,
-                                                    purchase_order_specified_product_quantity:fres[0].purchase_order_specified_product_quantity,
-                                                    annexure:annexure
+                                                    purchase_order_id: fres[0].purchase_order_id,
+                                                    product_id: fres[0].product_id,
+                                                    purchase_order_specified_product_quantity: fres[0].purchase_order_specified_product_quantity,
+                                                    annexure: annexure
                                                 })
 
-                                                return callBack(null,finalres);
+                                                return callBack(null, finalres);
                                             }
                                         }
-                                    ) 
+                                    )
                                 });
-                            }else{
-                                return callBack(null,fres)
+                            } else {
+                                return callBack(null, fres)
                             }
                         }
                     )
-                }else{
-                    return callBack(null,results);
+                } else {
+                    return callBack(null, results);
                 }
             }
-        )}
+        )
+    }
 }
