@@ -1,8 +1,8 @@
 require("dotenv").config();
-const express = require('express');
+const express = require("express");
 const app = express();
-const cors = require('cors');
-const publicDir = require('path').join(__dirname, './api/upload');
+const cors = require("cors");
+const publicDir = require("path").join(__dirname, "./api/upload");
 app.use("/api/upload", express.static(publicDir));
 app.use(cors());
 app.use(express.json());
@@ -34,10 +34,9 @@ app.use(express.json());
 //  });
 //////////////////////
 
-
 const fileRouter = require("./api/fileUpload/fileUpload.service");
 const userRouter = require("./api/user/user.router");
-const registrationRouter = require("./api/registration/registration.router")
+const registrationRouter = require("./api/registration/registration.router");
 const roleRouter = require("./api/Role/role.router");
 const activitiesRouter = require("./api/Activities/activities.router");
 const permissionRouter = require("./api/permission/permission.router");
@@ -63,6 +62,9 @@ const PurchaseOrderRouter = require("./api/purchase_order/purchase_order.router"
 const annexureRouter = require("./api/annexure/annexure.router");
 const annexure_detailsRouter = require("./api/annexure_details/annexure_details.router");
 const accessoriesRouter = require("./api/accessories/accessories.router");
+const materialRequisitionItemRouter = require("./api/material_requisition_items/material_requisition_items.router");
+const materialRequisition = require("./api/material_requisition/material_requisition.router");
+
 app.use("/api/upload", fileRouter);
 app.use("/api/registration", registrationRouter);
 app.use("/api/role", roleRouter);
@@ -91,15 +93,16 @@ app.use("/api/purchase_order", PurchaseOrderRouter);
 app.use("/api/annexure", annexureRouter);
 app.use("/api/annexure_details", annexure_detailsRouter);
 app.use("/api/accessories", accessoriesRouter);
+app.use("/api/materialRequisitionItem", materialRequisitionItemRouter);
+app.use("/api/materialRequisition", materialRequisition);
 
 app.get("/api", (req, res) => {
-    res.json({
-        success: 1,
-        message: "This API is working"
-    });
+  res.json({
+    success: 1,
+    message: "This API is working",
+  });
 });
 
-
 app.listen(process.env.APP_PORT, () => {
-    console.log('Port Demo:' + process.env.APP_PORT);
-})
+  console.log("Port Demo:" + process.env.APP_PORT);
+});
